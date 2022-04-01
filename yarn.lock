@@ -26,9 +26,9 @@ ansi-styles@^4.0.0:
   dependencies:
     color-convert "^2.0.1"
 
-"bolt-cep@https://github.com/hyperbrew/bolt-cep.git":
+"bolt-cep@http://github.com/hyperbrew/bolt-cep.git":
   version "0.0.4"
-  resolved "https://github.com/hyperbrew/bolt-cep.git#85a002206fba29a0f31246585d701bc29090c780"
+  resolved "http://github.com/hyperbrew/bolt-cep.git#85a002206fba29a0f31246585d701bc29090c780"
   dependencies:
     react "^17.0.0"
     react-dom "^17.0.0"
