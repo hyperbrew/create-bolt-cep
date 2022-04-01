@@ -1,0 +1,33 @@
+{
+  "name": "create-bolt-cep",
+  "version": "0.0.1",
+  "license": "MIT",
+  "bin": {
+    "create-bolt-cep": "index.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "publish": "npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyper-brew/create-bolt-cep.git",
+    "directory": "packages/create-vite"
+  },
+  "bugs": {
+    "url": "https://github.com//hyper-brew/create-bolt-cep/issues"
+  },
+  "dependencies": {
+    "@types/yargs": "^17.0.10",
+    "bolt-cep": "https://github.com/hyperbrew/bolt-cep.git",
+    "fs-extra": "^10.0.1",
+    "minimalist": "^1.0.0",
+    "yargs": "^17.4.0"
+  }
+}
