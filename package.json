@@ -28,8 +28,6 @@
   "dependencies": {
     "@types/yargs": "^17.0.10",
     "bolt-cep": "http://github.com/hyperbrew/bolt-cep.git",
-    "cfonts": "^2.10.1",
-    "chalk": "^5.0.1",
     "colors": "^1.4.0",
     "fs-extra": "^10.0.1",
     "minimalist": "^1.0.0",
