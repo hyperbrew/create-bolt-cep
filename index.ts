@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 
-"use strict";
-
 import * as fs from "fs-extra";
 import * as path from "path";
 import * as c from "colors/safe";
-//@ts-ignore
-// import * as cfonts from "cfonts";
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -24,18 +20,6 @@ const space = () => console.info("");
 
 const init = async () => {
   space();
-  // cfonts.say("Bolt CEP", {
-  //   font: "block", // define the font face
-  //   align: "left", // define text alignment
-  //   // colors: ["#f6921e", "#ff5b3b"], // define all colors
-  //   background: "transparent", // define the background color, you can also use `backgroundColor` here as key
-  //   letterSpacing: 1, // define letter spacing
-  //   lineHeight: 1, // define the line height
-  //   space: true, // define if the output text should have empty lines on top and on the bottom
-  //   gradient: ["#f6921e", "#ff5b3b"],
-  //   transitionGradient: true,
-  //   maxLength: "0", // define how many character can be on one line
-  // });
   console.log(c.green("Create Bolt: CEP"));
   console.log(c.cyan("by Hyper Brew | https://hyperbrew.co"));
   space();
