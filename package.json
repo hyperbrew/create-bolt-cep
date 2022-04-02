@@ -27,10 +27,9 @@
   },
   "dependencies": {
     "@types/yargs": "^17.0.10",
-    "bolt-cep": "http://github.com/hyperbrew/bolt-cep.git",
+    "bolt-cep": "^0.0.5",
     "colors": "^1.4.0",
     "fs-extra": "^10.0.1",
-    "minimalist": "^1.0.0",
     "ts-node": "^10.7.0",
     "yargs": "^17.4.0"
   }
