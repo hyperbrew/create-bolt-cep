@@ -1,6 +1,6 @@
 {
   "name": "create-bolt-cep",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "MIT",
   "bin": {
     "create-bolt-cep": "index.js"
@@ -13,6 +13,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
+    "build": "tsc index.ts",
     "publish": "npm publish --access public"
   },
   "repository": {
@@ -26,8 +27,12 @@
   "dependencies": {
     "@types/yargs": "^17.0.10",
     "bolt-cep": "http://github.com/hyperbrew/bolt-cep.git",
+    "cfonts": "^2.10.1",
+    "chalk": "^5.0.1",
+    "colors": "^1.4.0",
     "fs-extra": "^10.0.1",
     "minimalist": "^1.0.0",
+    "ts-node": "^10.7.0",
     "yargs": "^17.4.0"
   }
 }
