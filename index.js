@@ -17,6 +17,10 @@ const frameworks = [
 ];
 
 const init = async () => {
+  console.log("Create Bolt CEP");
+  console.log("by Hyper Brew");
+  console.log("hyperbrew.co");
+  console.info("--------------");
   const dir = process.cwd();
   const templateStr = argv["template"];
   const name = argv["_"].pop();
@@ -25,7 +29,9 @@ const init = async () => {
 
   if (frameworks.map((f) => f.name).includes(templateStr) && name?.length > 0) {
     const dest = path.join(dir, name);
-    let bolt = path.join(__dirname, "node_modules", "bolt-cep");
+    let localBolt = path.join(__dirname, "node_modules", "bolt-cep");
+    let globalBolt = path.join(__dirname, "..", "bolt-cep");
+    let bolt = fs.existsSync(localBolt) ? localBolt : globalBolt;
     const isSymlink = fs.lstatSync(bolt).isSymbolicLink();
     bolt = isSymlink ? fs.realpathSync(bolt) : bolt;
     fs.mkdirSync(dest);
@@ -61,6 +67,7 @@ const init = async () => {
       }
     });
 
+    console.info("--------------");
     console.log(`New Bolt CEP generated with ${template.pretty}: ${name}`);
     console.info("--------------");
     console.log(`Path :: ${dest}`);

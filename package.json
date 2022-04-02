@@ -1,6 +1,6 @@
 {
   "name": "create-bolt-cep",
-  "version": "0.0.3",
+  "version": "0.0.7",
   "license": "MIT",
   "bin": {
     "create-bolt-cep": "index.js"
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@types/yargs": "^17.0.10",
-    "bolt-cep": "^0.0.4",
+    "bolt-cep": "http://github.com/hyperbrew/bolt-cep.git",
     "fs-extra": "^10.0.1",
     "minimalist": "^1.0.0",
     "yargs": "^17.4.0"
