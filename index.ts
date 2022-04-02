@@ -36,8 +36,8 @@ const init = async () => {
   //   transitionGradient: true,
   //   maxLength: "0", // define how many character can be on one line
   // });
-  console.log(c.green("Create Bolt CEP"));
-  console.log(c.cyan("by Hyper Brew // https://hyperbrew.co"));
+  console.log(c.green("Create Bolt: CEP"));
+  console.log(c.cyan("by Hyper Brew | https://hyperbrew.co"));
   space();
   div();
   space();
@@ -90,9 +90,14 @@ const init = async () => {
     });
 
     div();
-    console.log(`New Bolt CEP generated with ${template.pretty}: ${name}`);
+    console.log(
+      c.cyan(`New Bolt CEP generated with ${template.pretty}`),
+      c.green(name)
+    );
     div();
-    console.log(`Path :: ${dest}`);
+    console.log(c.cyan(`Path :: ${dest}`));
+    div();
+    div();
   } else {
     console.error(c.red("Incorrect Command"));
     space();

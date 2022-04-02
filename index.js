@@ -70,8 +70,8 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
         //   transitionGradient: true,
         //   maxLength: "0", // define how many character can be on one line
         // });
-        console.log(c.green("Create Bolt CEP"));
-        console.log(c.cyan("by Hyper Brew // https://hyperbrew.co"));
+        console.log(c.green("Create Bolt: CEP"));
+        console.log(c.cyan("by Hyper Brew | https://hyperbrew.co"));
         space();
         div();
         space();
@@ -115,9 +115,11 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                 }
             });
             div();
-            console.log("New Bolt CEP generated with ".concat(template.pretty, ": ").concat(name));
+            console.log(c.cyan("New Bolt CEP generated with ".concat(template.pretty)), c.green(name));
             div();
-            console.log("Path :: ".concat(dest_1));
+            console.log(c.cyan("Path :: ".concat(dest_1)));
+            div();
+            div();
         }
         else {
             console.error(c.red("Incorrect Command"));
