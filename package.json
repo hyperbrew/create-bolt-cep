@@ -1,6 +1,6 @@
 {
   "name": "create-bolt-cep",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "license": "MIT",
   "bin": {
     "create-bolt-cep": "index.js"
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@types/yargs": "^17.0.10",
-    "bolt-cep": "^0.0.6",
+    "bolt-cep": "^0.0.7",
     "colors": "^1.4.0",
     "fs-extra": "^10.0.1",
     "ts-node": "^10.7.0",
