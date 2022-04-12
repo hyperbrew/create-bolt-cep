@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@types/yargs": "^17.0.10",
-    "bolt-cep": "^0.0.7",
+    "bolt-cep": "^0.0.8",
     "colors": "^1.4.0",
     "fs-extra": "^10.0.1",
     "ts-node": "^10.7.0",
