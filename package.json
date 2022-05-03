@@ -1,6 +1,6 @@
 {
   "name": "create-bolt-cep",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "license": "MIT",
   "bin": {
     "create-bolt-cep": "index.js"
