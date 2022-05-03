@@ -6,7 +6,8 @@
     "outDir": "./lib",
     "strict": true,
     "allowJs": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "newLine": "lf"
   },
   "include": ["index.ts"],
   "exclude": ["node_modules"]
