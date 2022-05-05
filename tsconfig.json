@@ -3,12 +3,11 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "./lib",
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
     "newLine": "lf"
   },
-  "include": ["index.ts"],
+  "files": ["index.ts"],
   "exclude": ["node_modules"]
 }
