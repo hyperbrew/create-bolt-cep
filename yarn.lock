@@ -180,10 +180,10 @@ arg@^4.1.0:
   resolved "https://registry.yarnpkg.com/arg/-/arg-4.1.3.tgz#269fc7ad5b8e42cb63c896d5666017261c144089"
   integrity sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==
 
-bolt-cep@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/bolt-cep/-/bolt-cep-0.1.9.tgz#42b559de64a21313e1a241075ca1947f630313c6"
-  integrity sha512-DggGb/DHmlYyGeNRlLHl8Ube3RMwGlVKb9WsWL0LH0Eib9e32OJiNTnu4Pu70Mt47LXZsMOg+U95D2V5InaXsg==
+bolt-cep@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/bolt-cep/-/bolt-cep-0.2.0.tgz#126a1dc6ace3ea2fe125633fa267cfc46d00aa50"
+  integrity sha512-DHbWK4I4GWtQz3dH33765DNpKU6rpq20ymw9k9N2vlK2Jk3MDssqAppFDvorlX8nRhuDG8f5ypTu8X/mqzD5TA==
   dependencies:
     react "^17.0.0"
     react-dom "^17.0.0"
