@@ -18,6 +18,19 @@ const div = () =>
   console.info(c.grey("--------------------------------------------------"));
 const space = () => console.info("");
 
+const replaceInFile = (
+  fullPath: string,
+  items: [findStr: string | RegExp, replaceStr: string][]
+) => {
+  const fileIn = fs.readFileSync(fullPath, { encoding: "utf-8" });
+  fs.unlinkSync(fullPath);
+  let fileOut = fileIn;
+  items.map((item) => {
+    fileOut = fileOut.replace(item[0], item[1]);
+  });
+  fs.writeFileSync(fullPath, fileOut, { encoding: "utf-8" });
+};
+
 const init = async () => {
   space();
   console.log(c.green("Create Bolt: CEP"));
@@ -41,12 +54,42 @@ const init = async () => {
     const isSymlink = fs.lstatSync(bolt).isSymbolicLink();
     bolt = isSymlink ? fs.realpathSync(bolt) : bolt;
     fs.mkdirSync(dest);
-    const ignoreItems = [".git", "node_modules", "dist"];
+
+    // Get Unused Packages
+    const unused = frameworks
+      .filter((item) => item.name !== template.name)
+      .map((i) => i.name);
+
+    let ignoreItems = [
+      ".git",
+      "node_modules",
+      "dist",
+      "cep.config.debug.ts",
+      "tsconfig.json",
+      "vite.config.ts",
+      "package.json",
+    ];
+
+    unused.map((item) => {
+      ignoreItems.push(`vite.config.${item}.ts`);
+      ignoreItems.push(`package.${item}.json`);
+      ignoreItems.push(`tsconfig.${item}.json`);
+    });
+
+    console.log({ ignoreItems });
+
     fs.readdirSync(bolt).map((item) => {
       if (!ignoreItems.includes(item)) {
         const srcItem = path.join(bolt, item);
-        const dstItem = path.join(dest, item);
-        fs.copySync(srcItem, dstItem);
+        if (item === `vite.config.${template.name}.ts`) {
+          fs.copySync(srcItem, path.join(dest, `vite.config.ts`));
+        } else if (item === `package.${template.name}.json`) {
+          fs.copySync(srcItem, path.join(dest, `package.json`));
+        } else if (item === `tsconfig.${template.name}.json`) {
+          fs.copySync(srcItem, path.join(dest, `tsconfig.json`));
+        } else {
+          fs.copySync(srcItem, path.join(dest, item));
+        }
       }
     });
     const jsFolder = path.join(dest, "src", "js");
@@ -73,17 +116,10 @@ const init = async () => {
       }
     });
 
-    // Delete extra dependencies
-    const pkJson = path.join(dest, "package.json");
-    const pkJsonIn = fs.readFileSync(pkJson, { encoding: "utf-8" });
-    fs.unlinkSync(pkJson);
-    const unused = frameworks
-      .filter((item) => item.name !== template.name)
-      .map((i) => i.name)
-      .join("|");
-    const unusedReg = new RegExp(".*(\\b(" + unused + ")\\b).*", "g");
-    const pkJsonOut = pkJsonIn.replace(unusedReg, "");
-    fs.writeFileSync(pkJson, pkJsonOut, { encoding: "utf-8" });
+    // Remove Debug Lines from config
+    replaceInFile(path.join(dest, "cep.config.ts"), [
+      [/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""],
+    ]);
 
     div();
     console.log(
