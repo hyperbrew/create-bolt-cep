@@ -76,8 +76,6 @@ const init = async () => {
       ignoreItems.push(`tsconfig.${item}.json`);
     });
 
-    console.log({ ignoreItems });
-
     fs.readdirSync(bolt).map((item) => {
       if (!ignoreItems.includes(item)) {
         const srcItem = path.join(bolt, item);
