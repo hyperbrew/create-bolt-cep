@@ -73,6 +73,18 @@ const init = async () => {
       }
     });
 
+    // Delete extra dependencies
+    const pkJson = path.join(dest, "package.json");
+    const pkJsonIn = fs.readFileSync(pkJson, { encoding: "utf-8" });
+    fs.unlinkSync(pkJson);
+    const unused = frameworks
+      .filter((item) => item.name !== template.name)
+      .map((i) => i.name)
+      .join("|");
+    const unusedReg = new RegExp(".*(\\b(" + unused + ")\\b).*", "g");
+    const pkJsonOut = pkJsonIn.replace(unusedReg, "");
+    fs.writeFileSync(pkJson, pkJsonOut, { encoding: "utf-8" });
+
     div();
     console.log(
       c.cyan(`New Bolt CEP generated with ${template.pretty}`),
