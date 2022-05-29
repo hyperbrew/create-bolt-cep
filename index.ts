@@ -124,6 +124,8 @@ const init = async () => {
     div();
   } else {
     console.error(c.red("Incorrect Command"));
+    // Give the user a visual of what the issue was in their command
+    const appMessage = `App name provided: ${name || ""}`;
     const templateMessage = `Template name provided: ${templateStr || ""}`;
     console.error(name?.length > 0 ? c.green(appMessage) : c.red(appMessage));
     console.error(template ? c.green(templateMessage) : c.red(templateMessage));
