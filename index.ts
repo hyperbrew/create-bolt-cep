@@ -14,8 +14,7 @@ const frameworks = [
   { name: "svelte", pretty: "Svelte" },
 ];
 
-const div = () =>
-  console.info(c.grey("--------------------------------------------------"));
+const div = () => console.info(c.grey("--------------------------------------------------"));
 const space = () => console.info("");
 
 const replaceInFile = (
@@ -43,22 +42,22 @@ const init = async () => {
   const templateStr = argv["template"];
   //@ts-ignore
   const name = argv["_"].pop();
-
   const template = frameworks.find((f) => f.name === templateStr);
 
   if (template && name?.length > 0) {
-    const dest = path.join(dir, name);
+    // Check if the destination is our current folder
+    const dest = name === "./" ? dir : path.join(dir, name);
+    // Only create the new folder if required.
+    if (dest !== dir) fs.mkdirSync(dest);
+
     let localBolt = path.join(__dirname, "node_modules", "bolt-cep");
     let globalBolt = path.join(__dirname, "..", "bolt-cep");
     let bolt = fs.existsSync(localBolt) ? localBolt : globalBolt;
     const isSymlink = fs.lstatSync(bolt).isSymbolicLink();
     bolt = isSymlink ? fs.realpathSync(bolt) : bolt;
-    fs.mkdirSync(dest);
 
     // Get Unused Packages
-    const unused = frameworks
-      .filter((item) => item.name !== template.name)
-      .map((i) => i.name);
+    const unused = frameworks.filter((item) => item.name !== template.name).map((i) => i.name);
 
     let ignoreItems = [
       ".git",
@@ -115,29 +114,31 @@ const init = async () => {
     });
 
     // Remove Debug Lines from config
-    replaceInFile(path.join(dest, "cep.config.ts"), [
-      [/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""],
-    ]);
+    replaceInFile(path.join(dest, "cep.config.ts"), [[/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""]]);
 
     div();
-    console.log(
-      c.cyan(`New Bolt CEP generated with ${template.pretty}`),
-      c.green(name)
-    );
+    console.log(c.cyan(`New Bolt CEP generated with ${template.pretty}`), c.green(name));
     div();
     console.log(c.cyan(`Path :: ${dest}`));
     div();
     div();
   } else {
     console.error(c.red("Incorrect Command"));
+    const templateMessage = `Template name provided: ${templateStr || ""}`;
+    console.error(name?.length > 0 ? c.green(appMessage) : c.red(appMessage));
+    console.error(template ? c.green(templateMessage) : c.red(templateMessage));
+
     space();
     console.info(c.cyan("EXAMPLES:"));
     div();
-    console.info(
-      c.cyan(`(e.g. "yarn create bolt-cep my-app --template react")`)
-    );
-    console.info(
-      c.cyan(`(e.g. "yarn create bolt-cep my-cool-app --template vue")`)
+
+    // Let the user know the possible frameworks from the array we're checking against
+    frameworks.forEach((framework) =>
+      console.info(
+        c.cyan(
+          `${framework.pretty}: "yarn create bolt-cep my-${framework.name}-app --template ${framework.name}"`
+        )
+      )
     );
     div();
   }
