@@ -119,6 +119,13 @@ const init = async () => {
       [/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""],
     ]);
 
+    // Add .gitignore
+    fs.writeFileSync(
+      path.join(dest, ".gitignore"),
+      ["node_modules", "dist", ".DS_Store"].join("\r"),
+      { encoding: "utf-8" }
+    );
+
     div();
     console.log(
       c.cyan(`New Bolt CEP generated with ${template.pretty}`),
