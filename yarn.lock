@@ -180,14 +180,13 @@ arg@^4.1.0:
   resolved "https://registry.yarnpkg.com/arg/-/arg-4.1.3.tgz#269fc7ad5b8e42cb63c896d5666017261c144089"
   integrity sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==
 
-bolt-cep@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/bolt-cep/-/bolt-cep-1.0.0.tgz#84f44dbe56840d2c20e2c565a383fa311b59c912"
-  integrity sha512-2qb2cfAN8jL54d3mIcbGrGQmEO9GKGV9tswXfZrNk3ucy7nbZTrV5GN6gzYbVBNdyb0P2a9EV4hsCOP009MoUQ==
+bolt-cep@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/bolt-cep/-/bolt-cep-1.0.1.tgz#3b670b800c72bdabb6074c9c8488aa5907a4293f"
+  integrity sha512-cvO7812xSPxVt+woMrJBPPHWPGljhEZQ8mBpqjWMATECjmnAqqrt3tCYP8rk4ftItQaCKKzFaHFsUux9xQdNgg==
   dependencies:
     react "^18.2.0"
     react-dom "^18.2.0"
-    source-map-js "^1.0.2"
     vue "^3.2.45"
 
 cliui@^7.0.2:
