@@ -1,7 +1,15 @@
 # Create Bolt CEP
 
+![npm](https://img.shields.io/npm/v/create-bolt-cep)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/hyperbrew/bolt-cep/blob/master/LICENSE)
+[![Chat](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/PC3EvvuRbc)
+
 Generate a new CEP Extension from the Bolt CEP boilerplate
 
 https://github.com/hyperbrew/bolt-cep
 
-Use with `yarn create bolt-cep my-app --template react`
+Usage Examples:
+
+`yarn create bolt-cep myApp --template svelte`
+`yarn create bolt-cep myApp --template react`
+`yarn create bolt-cep myApp --template vue`
