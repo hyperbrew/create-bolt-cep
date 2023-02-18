@@ -6,8 +6,9 @@
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "newLine": "lf"
+    "newLine": "lf",
+    "outDir": "dist"
   },
-  "files": ["index.ts"],
+  "files": ["src/index.ts"],
   "exclude": ["node_modules"]
 }
