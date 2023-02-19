@@ -1,58 +1,29 @@
-import * as path from "path";
-import { ChildProcess, spawn } from "child_process";
-import { promisify } from "util";
+import * as execa from "execa";
 import { Options } from "./bolt";
 
 export async function installDeps(options: Options) {
-  runCommandsInDirectory(options.dir, ["yarn"]);
+  await runCommandInDirectory(options.dir, [{ command: "yarn" }]);
 }
 
 export async function initGit(options: Options) {
-  runCommandsInDirectory(options.dir, ["git init"]);
+  await runCommandInDirectory(options.dir, [
+    { command: "git", args: ["init"] },
+    // { command: "git", args: ["rm", "-r", "--cached", "."] },
+    { command: "git", args: ["add", "."] },
+    { command: "git", args: ["commit", "-m", "init commit"] },
+  ]);
 }
 
-async function runCommandsInDirectory(
+async function runCommandInDirectory(
   directoryPath: string,
-  commands: string[]
+  commands: { command: string; args?: string[] }[]
 ): Promise<void> {
   const originalDirectory = process.cwd();
-
   process.chdir(directoryPath);
 
-  const promisifiedSpawn = promisify(spawn) as (
-    command: string,
-    args?: string[],
-    options?: any
-  ) => Promise<ChildProcess>;
-  try {
-    for (const command of commands) {
-      const child: ChildProcess = await promisifiedSpawn(command, [], {
-        shell: true,
-        cwd: path.resolve(directoryPath),
-      });
-
-      child?.stdout?.on("data", (data: Buffer) => {
-        console.log(`stdout: ${data}`);
-      });
-
-      child?.stderr?.on("data", (data: Buffer) => {
-        console.error(`stderr: ${data}`);
-      });
-
-      child.on("error", (error: Error) => {
-        console.error(`error: ${error.message}`);
-      });
-
-      await new Promise<void>((resolve) => {
-        child.on("close", (code: number) => {
-          console.log(`child process exited with code ${code}`);
-          resolve();
-        });
-      });
-    }
-  } catch (error) {
-    console.error(`Error: ${error}`);
-  } finally {
-    process.chdir(originalDirectory);
+  for (const command of commands) {
+    await execa(command.command, command.args);
   }
+
+  process.chdir(originalDirectory);
 }

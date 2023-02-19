@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
+import * as color from "picocolors";
+import * as path from "path";
+
 import { prompts } from "./lib/prompts";
 import { frameworkOptions, installBolt, Options } from "./lib/bolt";
 import { parseArgs } from "./lib/parse-args";
 import { installDeps, initGit } from "./lib/utils";
-import * as color from "picocolors";
-import path = require("path");
 
 main();
 
@@ -30,16 +31,16 @@ async function main() {
   } else {
     installBolt(args);
 
-    if (args.installDeps) {
-      console.log("Installing dependencies via yarn");
-      await installDeps(options);
-      console.log("Installed dependencies via yarn.");
-    }
-
     if (args.git) {
       console.log("Initializing git repo");
       await initGit(options);
       console.log("Initialized git repo.");
+    }
+
+    if (args.installDeps) {
+      console.log("Installing dependencies via yarn");
+      await installDeps(options);
+      console.log("Installed dependencies via yarn.");
     }
 
     options = args;

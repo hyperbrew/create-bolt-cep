@@ -106,7 +106,7 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
   }
 
   // Handle Adobe apps
-  if (Array.isArray(apps)) {
+  if (template === "skeleton" && Array.isArray(apps)) {
     apps.forEach((app) => {
       // remove files/folders
       // replace imports/types

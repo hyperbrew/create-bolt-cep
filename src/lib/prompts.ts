@@ -9,7 +9,6 @@ import {
   cancel,
   confirm,
 } from "@clack/prompts";
-import { setTimeout as sleep } from "node:timers/promises";
 import * as color from "picocolors";
 import { frameworkOptions, installBolt } from "./bolt";
 import { installDeps as _installDeps, initGit } from "./utils";
@@ -108,19 +107,19 @@ export async function prompts({ appName }: { appName: string }) {
 
   const options = { dir, framework, template, apps, installDeps, git };
   await installBolt(options);
-  await sleep(3000);
-  s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
 
-  if (installDeps) {
-    s.start("Installing dependencies via yarn");
-    await _installDeps(options);
-    s.stop("Installed dependencies via yarn.");
-  }
+  s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
 
   if (git) {
     s.start("Initializing git repo");
     await initGit(options);
     s.stop("Initialized git repo.");
+  }
+
+  if (installDeps) {
+    s.start("Installing dependencies via yarn");
+    await _installDeps(options);
+    s.stop("Installed dependencies via yarn.");
   }
 
   outro(`You're all set!`);
