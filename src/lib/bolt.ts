@@ -27,7 +27,7 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
   const isSymlink = fs.lstatSync(bolt).isSymbolicLink();
   bolt = isSymlink ? fs.realpathSync(bolt) : bolt;
 
-  fs.mkdirSync(dir.path);
+  fs.mkdirSync(dir.path, { recursive: true });
 
   // Get Unused Packages
   const unused = frameworkOptions
@@ -103,16 +103,39 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
   // Handle template
   if (template === "skeleton") {
     // remove files/folders
+    // src/js/assets
+    // src/js/main/main.scss
+    // src/js/favicon.svg
+    // src/js/index.scss
+    // src/js/variables.scss
+    //
     // replace imports/boilerplate
+    // cep.config.ts > config.iconDarkNormal: "./src/assets/light-icon.png",
+    // cep.config.ts > config.iconNormal: "./src/assets/dark-icon.png",
+    // cep.config.ts > config.iconDarkNormalRollOver: "./src/assets/light-icon.png",
+    // cep.config.ts > config.iconNormalRollOver: "./src/assets/dark-icon.png",
+    // src/js/main/index.tsx > import "../index.scss";
   }
 
   // Handle Adobe apps
   if (template === "skeleton" && Array.isArray(apps)) {
     apps.forEach((app) => {
       // remove files/folders
+      // cep.config.ts > config.hosts
+      // src/jsx/[app]
+      //
       // replace imports/types
+      // src/jsx/index.ts
     });
   }
 
   // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep" (or w/e)
+  // cep.config.ts > config.id: "com.bolt.cep",
+  // cep.config.ts > config.displayName: "Bolt CEP",
+  // cep.config.ts > config.panels.panelDisplayName: "Bolt CEP",
+  // src/js/index.html > <title>Bolt CEP React</title>
+
+  // set jsxbin to "off" for M1 macs
+  // cep.config.ts > config.build.jsxBin: "off",
+  // cep.config.ts > config.zxp.jsxBin: "off",
 }

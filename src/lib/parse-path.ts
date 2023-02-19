@@ -7,6 +7,7 @@ export function parsePath(appNameOrPath: string) {
   const appName = path.basename(appPath);
   const exists = dirExists(appPath);
   const isEmpty = exists ? isDirEmpty(appName) : true;
+  // const overwrite = appNameOrPath.charAt(0) === "!"; // TODO: allow overwriting of exisiting or non empty path
   return { path: appPath, name: appName, exists, isEmpty };
 }
 

@@ -91,12 +91,12 @@ export async function prompts({ destination }: { destination: string }) {
   handleCancel(installDeps);
 
   // git repo
-  const git = await confirm({
-    message: "Do you want to initialize a new git repository?",
-    initialValue: true,
-  });
+  // const git = await confirm({
+  //   message: "Do you want to initialize a new git repository?",
+  //   initialValue: true,
+  // });
 
-  handleCancel(git);
+  // handleCancel(git);
 
   // install bolt-cep
   const s = spinner();
@@ -107,9 +107,9 @@ export async function prompts({ destination }: { destination: string }) {
   if (!isString(template)) return;
   if (!isStringArray(apps)) return;
   if (!isBoolean(installDeps)) return;
-  if (!isBoolean(git)) return;
+  // if (!isBoolean(git)) return;
 
-  const options = { dir:parsePath(dir), framework, template, apps, installDeps, git }; // prettier-ignore
+  const options = { dir:parsePath(dir), framework, template, apps, installDeps, git: false }; // prettier-ignore
   await installBolt(options);
 
   s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
@@ -120,11 +120,11 @@ export async function prompts({ destination }: { destination: string }) {
     s.stop("Installed dependencies via yarn.");
   }
 
-  if (git) {
-    s.start("Initializing git repo");
-    await initGit(options);
-    s.stop("Initialized git repo.");
-  }
+  // if (git) {
+  //   s.start("Initializing git repo");
+  //   await initGit(options);
+  //   s.stop("Initialized git repo.");
+  // }
 
   outro(`You're all set!`);
 
