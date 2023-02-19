@@ -1,12 +1,14 @@
 import * as execa from "execa";
 import { Options } from "./bolt";
 
-export async function installDeps(options: Options) {
-  await runCommandInDirectory(options.dir, [{ command: "yarn" }]);
+export async function installDeps({ dir }: Options) {
+  await runCommandInDirectory(dir.path, [{ command: "yarn" }]);
 }
 
-export async function initGit(options: Options) {
-  await runCommandInDirectory(options.dir, [
+export async function initGit({ dir }: Options) {
+  return;
+  // TODO: this isn't working
+  await runCommandInDirectory(dir.path, [
     { command: "git", args: ["init"] },
     // { command: "git", args: ["rm", "-r", "--cached", "."] },
     { command: "git", args: ["add", "."] },

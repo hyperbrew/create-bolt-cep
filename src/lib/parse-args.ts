@@ -1,7 +1,7 @@
-import * as path from "path";
 import * as color from "picocolors";
 import * as yargs from "yargs";
 import { Options } from "./bolt";
+import { parsePath } from "./parse-path";
 
 export function parseArgs(): string | Options {
   const yargs = require("yargs");
@@ -43,7 +43,7 @@ export function parseArgs(): string | Options {
     .check(({ framework, template, apps }: Args) => {
       if (framework && !["react", "vue", "svelte"].includes(framework)) {
         throwError(
-          "framework",
+          "--framework",
           "needs to be one of: 'react', 'vue', or 'svelte'",
           framework
         );
@@ -51,7 +51,7 @@ export function parseArgs(): string | Options {
 
       if (template && !["demo", "skeleton"].includes(template)) {
         throwError(
-          "template",
+          "--template",
           "needs to be one of: 'demo', or 'skeleton'",
           template
         );
@@ -60,7 +60,7 @@ export function parseArgs(): string | Options {
       const validApps = ["aeft", "anim", "ilst", "phxs", "ppro"];
       if (apps.length && !apps.every((app) => validApps.includes(app))) {
         throwError(
-          "apps",
+          "--apps",
           "values need to be of supported apps: 'aeft', 'anim', 'ilst', 'phxs', or 'ppro'",
           apps.join(",")
         );
@@ -84,7 +84,7 @@ export function parseArgs(): string | Options {
     return argv["_"][0] ? String(argv["_"][0]) : "";
   } else {
     return {
-      dir: path.join(process.cwd(), String(argv["_"][0])),
+      dir: parsePath(String(argv["_"][0])),
       framework: argv.framework ?? "react",
       template: argv.template ?? "demo",
       apps: argv.apps ?? ["aeft", "anim", "ilst", "phxs", "ppro"],
@@ -94,9 +94,9 @@ export function parseArgs(): string | Options {
   }
 }
 
-function throwError(arg: string, message: string, value: string) {
+export function throwError(arg: string, message: string, value: string) {
   const label = color.bgRed(` error `);
-  const _arg = color.yellow(`--${arg}`);
+  const _arg = color.yellow(arg);
   const valueLabel = color.bgYellow(` value `);
   throw new Error(
     `\n${label} ${_arg} ${message}\n${valueLabel} ${_arg} was '${value}'\n`

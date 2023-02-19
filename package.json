@@ -40,6 +40,7 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^17.0.23",
-    "@types/yargs": "^17.0.10"
+    "@types/yargs": "^17.0.10",
+    "resolve-dir": "^1.0.1"
   }
 }

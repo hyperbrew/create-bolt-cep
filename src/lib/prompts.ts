@@ -11,26 +11,30 @@ import {
 } from "@clack/prompts";
 import * as color from "picocolors";
 import { frameworkOptions, installBolt } from "./bolt";
+import { parsePath } from "./parse-path";
 import { installDeps as _installDeps, initGit } from "./utils";
 
-export async function prompts({ appName }: { appName: string }) {
+export async function prompts({ destination }: { destination: string }) {
   const cbc = color.bgGreen(` create-bolt-cep `);
   const bar = color.gray("│   ");
   const bru = bar + color.cyan(`by Hyper Brew | https://hyperbrew.co`);
   intro(`${cbc}\n${bru}`);
 
   // dir
+  const placeholder = destination ? destination : "./";
   const dir = await text({
     message: "Where do you want to create your project?",
-    placeholder: appName ? `./${appName}` : ".",
-    initialValue: appName ? `./${appName}` : ".",
-    defaultValue: appName ? `./${appName}` : ".",
-    // validate(value) {
-    //   if (value.charAt(0) !== ".") return `Heads up! Your path is absolute.`;
-    // },
+    placeholder: placeholder,
+    initialValue: placeholder,
+    defaultValue: placeholder,
+    validate(value) {
+      const dir = parsePath(value);
+      if (dir.exists) return `Heads up! ${dir.path} already exists.`;
+      if (!dir.isEmpty) return `Heads up! ${dir.path} is not empty.`;
+    },
   });
 
-  checkCancel(dir);
+  handleCancel(dir);
 
   // TODO: check if dir is empty or already exists
 
@@ -41,7 +45,7 @@ export async function prompts({ appName }: { appName: string }) {
     initialValue: "react",
   });
 
-  checkCancel(framework);
+  handleCancel(framework);
   const frameworkObject = frameworkOptions.find((x) => x.value === framework);
 
   // template
@@ -54,7 +58,7 @@ export async function prompts({ appName }: { appName: string }) {
     initialValue: "demo",
   });
 
-  checkCancel(template);
+  handleCancel(template);
 
   // adobe apps
   let apps: symbol | string[] = [];
@@ -71,7 +75,7 @@ export async function prompts({ appName }: { appName: string }) {
       required: true,
     });
 
-    checkCancel(apps);
+    handleCancel(apps);
   }
 
   // typescript
@@ -84,7 +88,7 @@ export async function prompts({ appName }: { appName: string }) {
     initialValue: true,
   });
 
-  checkCancel(installDeps);
+  handleCancel(installDeps);
 
   // git repo
   const git = await confirm({
@@ -92,7 +96,7 @@ export async function prompts({ appName }: { appName: string }) {
     initialValue: true,
   });
 
-  checkCancel(git);
+  handleCancel(git);
 
   // install bolt-cep
   const s = spinner();
@@ -105,16 +109,10 @@ export async function prompts({ appName }: { appName: string }) {
   if (!isBoolean(installDeps)) return;
   if (!isBoolean(git)) return;
 
-  const options = { dir, framework, template, apps, installDeps, git };
+  const options = { dir:parsePath(dir), framework, template, apps, installDeps, git }; // prettier-ignore
   await installBolt(options);
 
   s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
-
-  if (git) {
-    s.start("Initializing git repo");
-    await initGit(options);
-    s.stop("Initialized git repo.");
-  }
 
   if (installDeps) {
     s.start("Installing dependencies via yarn");
@@ -122,12 +120,18 @@ export async function prompts({ appName }: { appName: string }) {
     s.stop("Installed dependencies via yarn.");
   }
 
+  if (git) {
+    s.start("Initializing git repo");
+    await initGit(options);
+    s.stop("Initialized git repo.");
+  }
+
   outro(`You're all set!`);
 
   return options;
 }
 
-function checkCancel(value: unknown) {
+function handleCancel(value: unknown) {
   if (isCancel(value)) {
     cancel("Operation cancelled");
     return process.exit(0);

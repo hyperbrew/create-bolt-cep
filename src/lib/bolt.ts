@@ -1,9 +1,10 @@
 import * as fs from "fs-extra";
 import * as path from "path";
+import { parsePath } from "./parse-path";
 import { replaceInFile } from "./replace";
 
 export type Options = {
-  dir: string;
+  dir: ReturnType<typeof parsePath>;
   framework: string;
   template: string;
   apps: string[];
@@ -26,7 +27,7 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
   const isSymlink = fs.lstatSync(bolt).isSymbolicLink();
   bolt = isSymlink ? fs.realpathSync(bolt) : bolt;
 
-  fs.mkdirSync(dir);
+  fs.mkdirSync(dir.path);
 
   // Get Unused Packages
   const unused = frameworkOptions
@@ -53,17 +54,17 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
     if (!ignoreItems.includes(item)) {
       const srcItem = path.join(bolt, item);
       if (item === `vite.config.${framework}.ts`) {
-        fs.copySync(srcItem, path.join(dir, `vite.config.ts`));
+        fs.copySync(srcItem, path.join(dir.path, `vite.config.ts`));
       } else if (item === `package.${framework}.json`) {
-        fs.copySync(srcItem, path.join(dir, `package.json`));
+        fs.copySync(srcItem, path.join(dir.path, `package.json`));
       } else if (item === `tsconfig.${framework}.json`) {
-        fs.copySync(srcItem, path.join(dir, `tsconfig.json`));
+        fs.copySync(srcItem, path.join(dir.path, `tsconfig.json`));
       } else {
-        fs.copySync(srcItem, path.join(dir, item));
+        fs.copySync(srcItem, path.join(dir.path, item));
       }
     }
   });
-  const jsFolder = path.join(dir, "src", "js");
+  const jsFolder = path.join(dir.path, "src", "js");
 
   // Remove Placeholder
   const tempMain = path.join(jsFolder, "main");
@@ -88,13 +89,13 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
   });
 
   // Remove Debug Lines from config
-  replaceInFile(path.join(dir, "cep.config.ts"), [
+  replaceInFile(path.join(dir.path, "cep.config.ts"), [
     [/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""],
   ]);
 
   // Add .gitignore
   fs.writeFileSync(
-    path.join(dir, ".gitignore"),
+    path.join(dir.path, ".gitignore"),
     ["node_modules", "dist", ".DS_Store"].join("\r"),
     { encoding: "utf-8" }
   );
