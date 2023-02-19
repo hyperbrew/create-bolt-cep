@@ -10,7 +10,7 @@ import {
   confirm,
 } from "@clack/prompts";
 import * as color from "picocolors";
-import { frameworkOptions, installBolt } from "./bolt";
+import { frameworkOptions, hostAppOptions, installBolt } from "./bolt";
 import { parsePath } from "./parse-path";
 import { installDeps as _installDeps, initGit } from "./utils";
 
@@ -35,8 +35,6 @@ export async function prompts({ destination }: { destination: string }) {
   });
 
   handleCancel(dir);
-
-  // TODO: check if dir is empty or already exists
 
   // framework
   const framework = await select({
@@ -65,13 +63,7 @@ export async function prompts({ destination }: { destination: string }) {
   if (template === "skeleton") {
     apps = await multiselect({
       message: "Which Adobe apps do you want to support?",
-      options: [
-        { value: "aeft", label: "After Effects" },
-        { value: "anim", label: "Animate" },
-        { value: "ilst", label: "Illustrator" },
-        { value: "phxs", label: "Photoshop" },
-        { value: "ppro", label: "Premiere Pro" },
-      ],
+      options: hostAppOptions,
       required: true,
     });
 

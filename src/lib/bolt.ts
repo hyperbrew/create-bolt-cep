@@ -1,7 +1,10 @@
 import * as fs from "fs-extra";
 import * as path from "path";
+import * as os from "os";
 import { parsePath } from "./parse-path";
 import { replaceInFile } from "./replace";
+import { dirname } from "path";
+import { titleCase } from "title-case";
 
 export type Options = {
   dir: ReturnType<typeof parsePath>;
@@ -17,6 +20,20 @@ export const frameworkOptions = [
   { value: "vue", label: "Vue" },
   { value: "svelte", label: "Svelte" },
 ];
+
+export const hostAppOptions = [
+  { value: "aeft", label: "After Effects" },
+  { value: "anim", label: "Animate" },
+  { value: "ilst", label: "Illustrator" },
+  { value: "phxs", label: "Photoshop" },
+  { value: "ppro", label: "Premiere Pro" },
+];
+
+// TODO: for "global" use?
+// export const templates = [
+//   { value: "demo", label: "Demo" },
+//   { value: "skeleton", label: "Skeleton" },
+// ];
 
 export async function installBolt({ dir, framework, template, apps }: Options) {
   const root = path.join(__dirname, "..", "..");
@@ -65,6 +82,7 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
     }
   });
   const jsFolder = path.join(dir.path, "src", "js");
+  const jsxFolder = path.join(dir.path, "src", "jsx");
 
   // Remove Placeholder
   const tempMain = path.join(jsFolder, "main");
@@ -89,9 +107,8 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
   });
 
   // Remove Debug Lines from config
-  replaceInFile(path.join(dir.path, "cep.config.ts"), [
-    [/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""],
-  ]);
+  const cepConfig = path.join(dir.path, "cep.config.ts");
+  replaceInFile(cepConfig, [[/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""]]);
 
   // Add .gitignore
   fs.writeFileSync(
@@ -109,33 +126,76 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
     // src/js/index.scss
     // src/js/variables.scss
     //
-    // replace imports/boilerplate
+    // remove references
     // cep.config.ts > config.iconDarkNormal: "./src/assets/light-icon.png",
     // cep.config.ts > config.iconNormal: "./src/assets/dark-icon.png",
     // cep.config.ts > config.iconDarkNormalRollOver: "./src/assets/light-icon.png",
     // cep.config.ts > config.iconNormalRollOver: "./src/assets/dark-icon.png",
+    //
     // src/js/main/index.tsx > import "../index.scss";
+    // src/js/main/index.ts > import "../index.scss";
+    //
+    // replace files
+    // src/js/main/main.tsx > import "../index.scss";
+    // src/js/main/main.svelte > import "../index.scss";
+    // src/js/main/main.vue > import "../index.scss";
   }
 
   // Handle Adobe apps
   if (template === "skeleton" && Array.isArray(apps)) {
-    apps.forEach((app) => {
+    // const folder = path.join(jsxFolder, "utils");
+    // fs.removeSync(folder);
+
+    hostAppOptions.forEach(({ label, value }) => {
+      if (!apps.includes(value)) return;
+
       // remove files/folders
-      // cep.config.ts > config.hosts
-      // src/jsx/[app]
-      //
-      // replace imports/types
-      // src/jsx/index.ts
+      const folder = path.join(jsxFolder, value);
+      fs.removeSync(folder);
+
+      // remove references
+      const index = path.join(jsxFolder, "index.ts");
+      const smooshed = label.toLocaleLowerCase().replace(/\s/g, "");
+      replaceInFile(index, [
+        [`import * as ${value} from "./${value}/${value}";`, ""],
+        [`case "${smooshed}":`, ""],
+        [`case "${smooshed}beta":`, ""],
+        [`main = ${value};\n    break;`, ""],
+        [`typeof ${value} &`, ""],
+        [`typeof ${value}`, ""],
+      ]);
+
+      const obj = `    {\n      name: "${value.toUpperCase()}",\n      version: "[0.0,99.9]",\n    },`;
+      replaceInFile(cepConfig, [[obj, ""]]);
+
+      if (value === "anim") {
+        const animString = `//@ts-ignore\n    if (app.appName === "Adobe Animate") {\n      main = anim;\n    }`;
+        replaceInFile(index, [[animString, ""]]);
+
+        const animObj = `    {\n      name: "FLPR",\n      version: "[0.0,99.9]",\n    },`;
+        replaceInFile(cepConfig, [[animObj, ""]]);
+      }
     });
   }
 
-  // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep" (or w/e)
-  // cep.config.ts > config.id: "com.bolt.cep",
-  // cep.config.ts > config.displayName: "Bolt CEP",
-  // cep.config.ts > config.panels.panelDisplayName: "Bolt CEP",
-  // src/js/index.html > <title>Bolt CEP React</title>
-
-  // set jsxbin to "off" for M1 macs
-  // cep.config.ts > config.build.jsxBin: "off",
-  // cep.config.ts > config.zxp.jsxBin: "off",
+  if (template === "skeleton") {
+    // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep"
+    const title = titleCase(dir.name);
+    const label = frameworkOptions.find((x) => x.value === framework)?.label!;
+    const index = path.join(jsFolder, "main", "index.html");
+    replaceInFile(index, [[`Bolt CEP ${label}`, title]]);
+    replaceInFile(cepConfig, [
+      ["com.bolt.cep", `com.${dir.name}.cep`],
+      ["Bolt CEP", title],
+    ]);
+  }
+  // set jsxbin to "off" for Apple Silicon
+  const isAppleSilicon = os.cpus().some((cpu) => cpu.model.includes("Apple"));
+  if (isAppleSilicon) {
+    const replaceWithOff = `jsxBin: "off", // Not supported on Apple Silicon (yet)`;
+    replaceInFile(cepConfig, [
+      [`jsxBin: "copy",`, replaceWithOff],
+      [`jsxBin: "replace",`, replaceWithOff],
+    ]);
+  }
 }

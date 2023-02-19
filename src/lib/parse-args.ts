@@ -1,7 +1,10 @@
 import * as color from "picocolors";
 import * as yargs from "yargs";
-import { Options } from "./bolt";
+import { frameworkOptions, hostAppOptions, Options } from "./bolt";
 import { parsePath } from "./parse-path";
+
+const frameworks = frameworkOptions.map((x) => x.value);
+const hostApps = hostAppOptions.map((x) => x.value);
 
 export function parseArgs(): string | Options {
   const yargs = require("yargs");
@@ -15,7 +18,7 @@ export function parseArgs(): string | Options {
     })
     .option("framework", {
       alias: "f",
-      describe: "'react', 'vue', or 'svelte'",
+      describe: frameworks.map((x) => `'${x}'`).join(", "),
       type: "string",
     })
     .option("template", {
@@ -25,7 +28,7 @@ export function parseArgs(): string | Options {
     })
     .option("apps", {
       alias: "a",
-      describe: "'aeft', 'anim', 'ilst', 'phxs', or 'ppro'",
+      describe: hostApps.map((x) => `'${x}'`).join(", "),
       coerce: (arg: string | string[]) =>
         Array.isArray(arg) ? arg : arg ? [arg] : [],
       type: "array",
@@ -41,10 +44,10 @@ export function parseArgs(): string | Options {
       type: "boolean",
     })
     .check(({ framework, template, apps }: Args) => {
-      if (framework && !["react", "vue", "svelte"].includes(framework)) {
+      if (framework && !frameworks.includes(framework)) {
         throwError(
           "--framework",
-          "needs to be one of: 'react', 'vue', or 'svelte'",
+          `needs to be one of: ${frameworks.map((x) => `'${x}'`).join(", ")}`,
           framework
         );
       }
@@ -57,16 +60,13 @@ export function parseArgs(): string | Options {
         );
       }
 
-      const validApps = ["aeft", "anim", "ilst", "phxs", "ppro"];
-      if (apps.length && !apps.every((app) => validApps.includes(app))) {
+      if (apps.length && !apps.every((app) => hostApps.includes(app))) {
         throwError(
           "--apps",
-          "values need to be of supported apps: 'aeft', 'anim', 'ilst', 'phxs', or 'ppro'",
+          `values need to be of supported apps: ${hostApps.map((x) => `'${x}'`).join(", ")}`, // prettier-ignore
           apps.join(",")
         );
       }
-
-      // TODO: check if path.join(process.cwd(), appName) is empty or already exists
 
       return true;
     })

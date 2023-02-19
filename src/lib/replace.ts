@@ -8,7 +8,7 @@ export const replaceInFile = (
   fs.unlinkSync(fullPath);
   let fileOut = fileIn;
   items.map((item) => {
-    fileOut = fileOut.replace(item[0], item[1]);
+    fileOut = fileOut.replaceAll(item[0], item[1]);
   });
   fs.writeFileSync(fullPath, fileOut, { encoding: "utf-8" });
 };
