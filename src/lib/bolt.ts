@@ -3,8 +3,8 @@ import * as path from "path";
 import * as os from "os";
 import { parsePath } from "./parse-path";
 import { replaceInFile } from "./replace";
-import { dirname } from "path";
 import { titleCase } from "title-case";
+import { SelectOptions } from "@clack/prompts";
 
 export type Options = {
   dir: ReturnType<typeof parsePath>;
@@ -13,15 +13,20 @@ export type Options = {
   apps: string[];
   git: boolean;
   installDeps: boolean;
+  displayName: string;
+  id: string;
 };
 
-export const frameworkOptions = [
+type Option = { value: string; label: string };
+type OptionsArray = SelectOptions<Option[], string>["options"];
+
+export const frameworkOptions: OptionsArray = [
   { value: "react", label: "React" },
   { value: "vue", label: "Vue" },
   { value: "svelte", label: "Svelte" },
 ];
 
-export const hostAppOptions = [
+export const hostAppOptions: OptionsArray = [
   { value: "aeft", label: "After Effects" },
   { value: "anim", label: "Animate" },
   { value: "ilst", label: "Illustrator" },
@@ -29,13 +34,19 @@ export const hostAppOptions = [
   { value: "ppro", label: "Premiere Pro" },
 ];
 
-// TODO: for "global" use?
-// export const templates = [
-//   { value: "demo", label: "Demo" },
-//   { value: "skeleton", label: "Skeleton" },
-// ];
+export const templateOptions: OptionsArray = [
+  { value: "demo", label: "Demo" },
+  { value: "skeleton", label: "Skeleton" },
+];
 
-export async function installBolt({ dir, framework, template, apps }: Options) {
+export async function installBolt({
+  dir,
+  framework,
+  template,
+  apps,
+  displayName,
+  id,
+}: Options) {
   const root = path.join(__dirname, "..", "..");
   const localBolt = path.join(root, "node_modules", "bolt-cep");
   const globalBolt = path.join(root, "..", "bolt-cep");
@@ -178,17 +189,17 @@ export async function installBolt({ dir, framework, template, apps }: Options) {
     });
   }
 
+  // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep"
   if (template === "skeleton") {
-    // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep"
-    const title = titleCase(dir.name);
     const label = frameworkOptions.find((x) => x.value === framework)?.label!;
     const index = path.join(jsFolder, "main", "index.html");
-    replaceInFile(index, [[`Bolt CEP ${label}`, title]]);
+    replaceInFile(index, [[`Bolt CEP ${label}`, displayName]]);
     replaceInFile(cepConfig, [
-      ["com.bolt.cep", `com.${dir.name}.cep`],
-      ["Bolt CEP", title],
+      ["Bolt CEP", displayName],
+      ["com.bolt.cep", id],
     ]);
   }
+
   // set jsxbin to "off" for Apple Silicon
   const isAppleSilicon = os.cpus().some((cpu) => cpu.model.includes("Apple"));
   if (isAppleSilicon) {

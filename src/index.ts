@@ -18,6 +18,8 @@ async function main() {
     apps: [],
     git: false,
     installDeps: false,
+    displayName: "",
+    id: "",
   };
 
   if (typeof args === "string") {

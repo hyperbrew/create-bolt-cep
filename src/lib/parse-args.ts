@@ -33,6 +33,16 @@ export function parseArgs(): string | Options {
         Array.isArray(arg) ? arg : arg ? [arg] : [],
       type: "array",
     })
+    .option("id", {
+      alias: "i",
+      describe: "Panel's id (com.bolt.cep)",
+      type: "string",
+    })
+    .option("display-name", {
+      alias: "n",
+      describe: "Panel's display name (Bolt CEP)",
+      type: "string",
+    })
     .option("install-dependencies", {
       alias: "i",
       describe: "Install dependencies",
@@ -78,11 +88,15 @@ export function parseArgs(): string | Options {
     !argv.framework &&
     !argv.template &&
     !argv.apps.length &&
+    !argv.displayName &&
+    !argv.id &&
     !argv.git &&
     !argv.installDeps
   ) {
     return argv["_"][0] ? String(argv["_"][0]) : "";
   } else {
+    const label = frameworkOptions.find((x) => x.value === argv.framework)
+      ?.label!;
     return {
       dir: parsePath(String(argv["_"][0])),
       framework: argv.framework ?? "react",
@@ -90,6 +104,8 @@ export function parseArgs(): string | Options {
       apps: argv.apps ?? ["aeft", "anim", "ilst", "phxs", "ppro"],
       git: argv.git ?? false,
       installDeps: argv.installDeps ?? false,
+      displayName: `Bolt CEP ${label}`,
+      id: "com.bolt.cep",
     };
   }
 }
