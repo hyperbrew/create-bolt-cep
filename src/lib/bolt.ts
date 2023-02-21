@@ -3,7 +3,7 @@ import * as path from "path";
 import * as os from "os";
 import { parsePath } from "./parse-path";
 import { replaceInFile } from "./replace";
-import { titleCase } from "title-case";
+import { updateObjectProperty, updateSwitchStatement } from "./ts-morph";
 import { SelectOptions } from "@clack/prompts";
 
 export type Options = {
@@ -18,7 +18,7 @@ export type Options = {
 };
 
 type Option = { value: string; label: string };
-type OptionsArray = SelectOptions<Option[], string>["options"];
+export type OptionsArray = SelectOptions<Option[], string>["options"];
 
 export const frameworkOptions: OptionsArray = [
   { value: "react", label: "React" },
@@ -132,8 +132,8 @@ export async function installBolt({
   if (template === "skeleton") {
     // remove files/folders
     // src/js/assets
-    // src/js/main/main.scss
     // src/js/favicon.svg
+    // src/js/main/main.scss
     // src/js/index.scss
     // src/js/variables.scss
     //
@@ -154,39 +154,23 @@ export async function installBolt({
 
   // Handle Adobe apps
   if (template === "skeleton" && Array.isArray(apps)) {
-    // const folder = path.join(jsxFolder, "utils");
-    // fs.removeSync(folder);
-
-    hostAppOptions.forEach(({ label, value }) => {
-      if (!apps.includes(value)) return;
-
-      // remove files/folders
-      const folder = path.join(jsxFolder, value);
-      fs.removeSync(folder);
-
-      // remove references
-      const index = path.join(jsxFolder, "index.ts");
-      const smooshed = label.toLocaleLowerCase().replace(/\s/g, "");
-      replaceInFile(index, [
-        [`import * as ${value} from "./${value}/${value}";`, ""],
-        [`case "${smooshed}":`, ""],
-        [`case "${smooshed}beta":`, ""],
-        [`main = ${value};\n    break;`, ""],
-        [`typeof ${value} &`, ""],
-        [`typeof ${value}`, ""],
-      ]);
-
-      const obj = `    {\n      name: "${value.toUpperCase()}",\n      version: "[0.0,99.9]",\n    },`;
-      replaceInFile(cepConfig, [[obj, ""]]);
-
-      if (value === "anim") {
-        const animString = `//@ts-ignore\n    if (app.appName === "Adobe Animate") {\n      main = anim;\n    }`;
-        replaceInFile(index, [[animString, ""]]);
-
-        const animObj = `    {\n      name: "FLPR",\n      version: "[0.0,99.9]",\n    },`;
-        replaceInFile(cepConfig, [[animObj, ""]]);
-      }
+    const index = path.join(jsxFolder, "index.ts");
+    const selectedApps = hostAppOptions.filter((x) => apps.includes(x.value));
+    updateSwitchStatement(index, selectedApps);
+    const hostAppStrings = apps.map((x) => {
+      const name = x === "anim" ? "FLPR" : x.toUpperCase();
+      return `{ name: "${name}", version: "[0.0,99.9]" }`;
     });
+    updateObjectProperty(
+      cepConfig,
+      "config",
+      "hosts",
+      `[\n${hostAppStrings.join(",\n")}\n]`
+    );
+
+    const rejectedApps = hostAppOptions.filter((x) => !apps.includes(x.value));
+    rejectedApps.forEach(({ value }) => fs.removeSync(path.join(jsxFolder, value))); // prettier-ignore
+    fs.removeSync(path.join(jsxFolder, "utils"));
   }
 
   // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep"
