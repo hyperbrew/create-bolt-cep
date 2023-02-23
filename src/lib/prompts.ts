@@ -11,16 +11,26 @@ import {
 } from "@clack/prompts";
 import * as color from "picocolors";
 import { titleCase } from "title-case";
+import { installBolt } from "./bolt";
 import {
+  appOptions,
   frameworkOptions,
-  hostAppOptions,
-  installBolt,
+  isAppStringArray,
+  isBoolean,
+  isFrameworkString,
+  isString,
+  isTemplateString,
+  Options,
   templateOptions,
-} from "./bolt";
+} from "./options";
 import { parsePath } from "./parse-path";
 import { installDeps as _installDeps, initGit } from "./utils";
 
-export async function prompts({ destination }: { destination: string }) {
+export async function prompts({
+  destination,
+}: {
+  destination: string;
+}): Promise<Options> {
   const cbc = color.bgGreen(` create-bolt-cep `);
   const bar = color.gray("│   ");
   const bru = bar + color.cyan(`by Hyper Brew | https://hyperbrew.co`);
@@ -41,7 +51,7 @@ export async function prompts({ destination }: { destination: string }) {
   });
 
   handleCancel(dir);
-  if (!isString(dir)) return;
+  if (!isString(dir)) throw new Error("");
   dir = parsePath(dir);
 
   // framework
@@ -70,7 +80,7 @@ export async function prompts({ destination }: { destination: string }) {
   if (template === "skeleton") {
     apps = await multiselect({
       message: "Which Adobe apps do you want to support?",
-      options: hostAppOptions,
+      options: appOptions,
       required: true,
     });
 
@@ -95,10 +105,7 @@ export async function prompts({ destination }: { destination: string }) {
     handleCancel(id);
   }
 
-  // typescript
-  // sass
-
-  // Fn dependencies
+  // install dependencies
   const recommended = color.gray("(recommended)");
   const installDeps = await confirm({
     message: `Do you want to install dependencies? ${recommended}`,
@@ -119,12 +126,12 @@ export async function prompts({ destination }: { destination: string }) {
   const s = spinner();
   s.start("Installing bolt-cep");
 
-  if (!isString(framework)) return;
-  if (!isString(template)) return;
-  if (!isStringArray(apps)) return;
-  if (!isString(displayName)) return;
-  if (!isString(id)) return;
-  if (!isBoolean(installDeps)) return;
+  if (!isFrameworkString(framework)) throw new Error("");
+  if (!isTemplateString(template)) throw new Error("");
+  if (!isAppStringArray(apps)) throw new Error("");
+  if (!isString(displayName)) throw new Error("");
+  if (!isString(id)) throw new Error("");
+  if (!isBoolean(installDeps)) throw new Error("");
   // if (!isBoolean(git)) return;
 
   const options = { dir, framework, template, apps, displayName, id, installDeps, git: false }; // prettier-ignore
@@ -154,16 +161,4 @@ function handleCancel(value: unknown) {
     cancel("Operation cancelled");
     return process.exit(0);
   }
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value);
-}
-
-function isString(value: unknown): value is string {
-  return typeof value === "string";
-}
-
-function isBoolean(value: unknown): value is boolean {
-  return typeof value === "boolean";
 }

@@ -1,5 +1,5 @@
 import { ts, Project, WriterFunction } from "ts-morph";
-import { OptionsArray } from "./bolt";
+import { App, OptionsArray } from "./options";
 
 export function updateObjectProperty(
   sourceFilePath: string,
@@ -23,13 +23,13 @@ export function updateObjectProperty(
     initializer: value,
   });
 
-  sourceFile.formatText({ indentSize: 2, });
+  sourceFile.formatText({ indentSize: 2 });
   sourceFile.saveSync();
 }
 
 export function updateSwitchStatement(
   sourceFilePath: string,
-  selectedApps: OptionsArray
+  selectedApps: OptionsArray<App>
 ) {
   const project = new Project();
   const sourceFile = project.addSourceFileAtPath(sourceFilePath);

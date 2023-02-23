@@ -2,58 +2,48 @@
 
 import * as color from "picocolors";
 import { prompts } from "./lib/prompts";
-import { frameworkOptions, installBolt, Options } from "./lib/bolt";
+import { installBolt } from "./lib/bolt";
+import { frameworkOptions } from "./lib/options";
 import { parseArgs, throwError } from "./lib/parse-args";
 import { installDeps, initGit } from "./lib/utils";
-import { parsePath } from "./lib/parse-path";
 
 main();
 
 async function main() {
-  const args = parseArgs();
-  let options: Options = {
-    framework: "",
-    dir: parsePath(""),
-    template: "",
-    apps: [],
-    git: false,
-    installDeps: false,
-    displayName: "",
-    id: "",
-  };
+  let options = await parseArgs();
 
-  if (typeof args === "string") {
+  if (typeof options === "string") {
     try {
-      const results = await prompts({ destination: args });
-      if (results) options = results;
+      options = await prompts({ destination: options });
     } catch (error) {
       console.error(error);
     }
   } else {
-    if (args.dir.exists)
-      throwError("<appname>", `path already exists.`, args.dir.path);
-    if (!args.dir.isEmpty)
-      throwError("<appname>", `path is not empty.`, args.dir.path);
+    if (options.dir.exists && !options.dir.isEmpty)
+      throwError("<appname>", `path is not empty.`, options.dir.path);
 
-    installBolt(args);
+    installBolt(options);
 
-    if (args.installDeps) {
-      console.log("Installing dependencies via yarn");
+    if (options.installDeps) {
+      console.log("Installing dependencies via yarn...");
       await installDeps(options);
       console.log("Installed dependencies via yarn.");
     }
 
-    if (args.git) {
-      console.log("Initializing git repo");
+    if (options.git) {
+      console.log("Initializing git repo...");
       await initGit(options);
       console.log("Initialized git repo.");
     }
-
-    options = args;
   }
 
-  const framework = frameworkOptions.find((x) => x.value === options.framework); // prettier-ignore
-  const yay = color.cyan(`New Bolt CEP generated with ${framework?.label}`);
+  // just for type checking, we should never return here, given that the return of prompts() sets options to an Options object
+  if (typeof options === "string") return;
+
+  const { framework } = options;
+  const { label } = frameworkOptions.find((x) => x.value === framework)!;
+
+  const yay = color.cyan(`New Bolt CEP generated with ${label}`);
   const name = color.green(color.bold(options.dir.name));
 
   console.log(yay, name);

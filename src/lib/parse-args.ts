@@ -1,16 +1,22 @@
 import * as color from "picocolors";
+import { titleCase } from "title-case";
 import * as yargs from "yargs";
-import { frameworkOptions, hostAppOptions, Options } from "./bolt";
+import {
+  App,
+  apps,
+  Framework,
+  frameworks,
+  isAppStringArray,
+  isFrameworkString,
+  isTemplateString,
+  Options,
+  Template,
+  templates,
+} from "./options";
 import { parsePath } from "./parse-path";
 
-const frameworks = frameworkOptions.map((x) => x.value);
-const hostApps = hostAppOptions.map((x) => x.value);
-
-export function parseArgs(): string | Options {
-  const yargs = require("yargs");
-
-  type Args = Omit<Options, "dir"> & { appname: string };
-  const argv: yargs.Arguments<Args> = yargs
+export async function parseArgs(): Promise<string | Options> {
+  const argv = await yargs
     .usage("Usage: $0 <appname> [options]")
     .positional("appname", {
       describe: "Name of the new bolt-cep application",
@@ -18,23 +24,23 @@ export function parseArgs(): string | Options {
     })
     .option("framework", {
       alias: "f",
-      describe: frameworks.map((x) => `'${x}'`).join(", "),
+      choices: frameworks,
       type: "string",
     })
     .option("template", {
       alias: "t",
-      describe: "'demo', or 'skeleton'",
+      choices: templates,
       type: "string",
     })
     .option("apps", {
       alias: "a",
-      describe: hostApps.map((x) => `'${x}'`).join(", "),
-      coerce: (arg: string | string[]) =>
-        Array.isArray(arg) ? arg : arg ? [arg] : [],
+      choices: apps,
+      // coerce: (arg: string | string[]) =>
+      //   Array.isArray(arg) ? arg : arg ? [arg] : [],
       type: "array",
     })
     .option("id", {
-      alias: "i",
+      alias: "id",
       describe: "Panel's id (com.bolt.cep)",
       type: "string",
     })
@@ -53,8 +59,8 @@ export function parseArgs(): string | Options {
       describe: "Initialize a new git repository",
       type: "boolean",
     })
-    .check(({ framework, template, apps }: Args) => {
-      if (framework && !frameworks.includes(framework)) {
+    .check(({ framework, template, apps: _apps }) => {
+      if (framework && !frameworks.includes(framework as Framework)) {
         throwError(
           "--framework",
           `needs to be one of: ${frameworks.map((x) => `'${x}'`).join(", ")}`,
@@ -62,7 +68,7 @@ export function parseArgs(): string | Options {
         );
       }
 
-      if (template && !["demo", "skeleton"].includes(template)) {
+      if (template && !templates.includes(template as Template)) {
         throwError(
           "--template",
           "needs to be one of: 'demo', or 'skeleton'",
@@ -70,10 +76,10 @@ export function parseArgs(): string | Options {
         );
       }
 
-      if (apps.length && !apps.every((app) => hostApps.includes(app))) {
+      if (_apps?.length && !_apps.every((app) => apps.includes(app as App))) {
         throwError(
           "--apps",
-          `values need to be of supported apps: ${hostApps.map((x) => `'${x}'`).join(", ")}`, // prettier-ignore
+          `values need to be of supported apps: ${apps.map((x) => `'${x}'`).join(", ")}`, // prettier-ignore
           apps.join(",")
         );
       }
@@ -84,28 +90,30 @@ export function parseArgs(): string | Options {
 
   // if we only got an app name, return the name (prompts() will take over from there!)
   // otherwise, use the args passed to construct an Options object, falling back on defaults where necessary
+  const appName = argv.appname ? String(argv.appname) : "";
+  const appDir = parsePath(appName);
   if (
     !argv.framework &&
     !argv.template &&
-    !argv.apps.length &&
+    !argv.apps?.length &&
     !argv.displayName &&
     !argv.id &&
-    !argv.git &&
-    !argv.installDeps
+    !argv.initializeGit &&
+    !argv.installDependencies
   ) {
-    return argv["_"][0] ? String(argv["_"][0]) : "";
+    return appName;
   } else {
-    const label = frameworkOptions.find((x) => x.value === argv.framework)
-      ?.label!;
     return {
-      dir: parsePath(String(argv["_"][0])),
-      framework: argv.framework ?? "react",
-      template: argv.template ?? "demo",
-      apps: argv.apps ?? ["aeft", "anim", "ilst", "phxs", "ppro"],
-      git: argv.git ?? false,
-      installDeps: argv.installDeps ?? false,
-      displayName: `Bolt CEP ${label}`,
-      id: "com.bolt.cep",
+      dir: appDir,
+      framework: isFrameworkString(argv.framework) ? argv.framework : "react",
+      template: isTemplateString(argv.template) ? argv.template : "demo",
+      apps: isAppStringArray(argv.apps)
+        ? argv.apps
+        : ["aeft", "anim", "ilst", "phxs", "ppro"],
+      git: argv.initializeGit ?? false,
+      installDeps: argv.installDependencies ?? false,
+      displayName: argv.displayName ?? titleCase(appDir.name),
+      id: argv.id ?? `com.${appDir.name}.cep`,
     };
   }
 }

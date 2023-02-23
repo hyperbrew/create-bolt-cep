@@ -1,5 +1,5 @@
 import * as execa from "execa";
-import { Options } from "./bolt";
+import { Options } from "./options";
 
 export async function installDeps({ dir }: Options) {
   await runCommandInDirectory(dir.path, [{ command: "yarn" }]);

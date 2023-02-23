@@ -1,43 +1,9 @@
 import * as fs from "fs-extra";
 import * as path from "path";
 import * as os from "os";
-import { parsePath } from "./parse-path";
 import { replaceInFile } from "./replace";
 import { updateObjectProperty, updateSwitchStatement } from "./ts-morph";
-import { SelectOptions } from "@clack/prompts";
-
-export type Options = {
-  dir: ReturnType<typeof parsePath>;
-  framework: string;
-  template: string;
-  apps: string[];
-  git: boolean;
-  installDeps: boolean;
-  displayName: string;
-  id: string;
-};
-
-type Option = { value: string; label: string };
-export type OptionsArray = SelectOptions<Option[], string>["options"];
-
-export const frameworkOptions: OptionsArray = [
-  { value: "react", label: "React" },
-  { value: "vue", label: "Vue" },
-  { value: "svelte", label: "Svelte" },
-];
-
-export const hostAppOptions: OptionsArray = [
-  { value: "aeft", label: "After Effects" },
-  { value: "anim", label: "Animate" },
-  { value: "ilst", label: "Illustrator" },
-  { value: "phxs", label: "Photoshop" },
-  { value: "ppro", label: "Premiere Pro" },
-];
-
-export const templateOptions: OptionsArray = [
-  { value: "demo", label: "Demo" },
-  { value: "skeleton", label: "Skeleton" },
-];
+import { Options, frameworkOptions, appOptions } from "./options";
 
 export async function installBolt({
   dir,
@@ -130,33 +96,58 @@ export async function installBolt({
 
   // Handle template
   if (template === "skeleton") {
-    // remove files/folders
-    // src/js/assets
-    // src/js/favicon.svg
-    // src/js/main/main.scss
-    // src/js/index.scss
-    // src/js/variables.scss
-    //
+    [
+      path.join("..", "public"),
+      "assets",
+      "favicon.svg",
+      path.join("main", "main.scss"),
+      "index.scss",
+      "variables.scss",
+    ].forEach((file) => fs.removeSync(path.join(jsFolder, file)));
+
     // remove references
-    // cep.config.ts > config.iconDarkNormal: "./src/assets/light-icon.png",
-    // cep.config.ts > config.iconNormal: "./src/assets/dark-icon.png",
-    // cep.config.ts > config.iconDarkNormalRollOver: "./src/assets/light-icon.png",
-    // cep.config.ts > config.iconNormalRollOver: "./src/assets/dark-icon.png",
-    //
-    // src/js/main/index.tsx > import "../index.scss";
-    // src/js/main/index.ts > import "../index.scss";
-    //
-    // replace files
-    // src/js/main/main.tsx > import "../index.scss";
-    // src/js/main/main.svelte > import "../index.scss";
-    // src/js/main/main.vue > import "../index.scss";
+    replaceInFile(cepConfig, [
+      [`iconDarkNormal: "./src/assets/light-icon.png",\n`, ""],
+      [`iconNormal: "./src/assets/dark-icon.png",\n`, ""],
+      [`iconDarkNormalRollOver: "./src/assets/light-icon.png",\n`, ""],
+      [`iconNormalRollOver: "./src/assets/dark-icon.png",\n`, ""],
+    ]);
+
+    [path.join("main", "index.tsx"), path.join("main", "index.ts")].forEach(
+      (file) => {
+        const filePath = path.join(jsFolder, file);
+        if (fs.existsSync(filePath)) {
+          replaceInFile(filePath, [[`import "../index.scss";\n`, ""]]);
+        }
+      }
+    );
+
+    const h1 = `<h1>Welcome to Bolt CEP!</h1>`;
+    const strings = {
+      react: `const Main = () => {\n  return (\n    <div>\n      ${h1}\n    </div>\n  );\n};\nexport default Main;`,
+      svelte: h1,
+      vue: `<template>\n  ${h1}\n</template>`,
+    };
+
+    [
+      path.join("main", "main.tsx"),
+      path.join("main", "main.svelte"),
+      path.join("main", "main.vue"),
+    ].forEach((file) => {
+      const filePath = path.join(jsFolder, file);
+      if (fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, strings[framework]);
+      }
+    });
   }
 
   // Handle Adobe apps
   if (template === "skeleton" && Array.isArray(apps)) {
     const index = path.join(jsxFolder, "index.ts");
-    const selectedApps = hostAppOptions.filter((x) => apps.includes(x.value));
+
+    const selectedApps = appOptions.filter((x) => apps.includes(x.value));
     updateSwitchStatement(index, selectedApps);
+
     const hostAppStrings = apps.map((x) => {
       const name = x === "anim" ? "FLPR" : x.toUpperCase();
       return `{ name: "${name}", version: "[0.0,99.9]" }`;
@@ -168,7 +159,7 @@ export async function installBolt({
       `[\n${hostAppStrings.join(",\n")}\n]`
     );
 
-    const rejectedApps = hostAppOptions.filter((x) => !apps.includes(x.value));
+    const rejectedApps = appOptions.filter((x) => !apps.includes(x.value));
     rejectedApps.forEach(({ value }) => fs.removeSync(path.join(jsxFolder, value))); // prettier-ignore
     fs.removeSync(path.join(jsxFolder, "utils"));
   }
@@ -193,4 +184,26 @@ export async function installBolt({
       [`jsxBin: "replace",`, replaceWithOff],
     ]);
   }
+
+  // // super secret, super opinionated, super aggressive "hide files you likely won't touch" setting
+  // let hideFiles = false; // TODO: pass as secret flag
+  // if (hideFiles) {
+  //   const exclude = {
+  //     "files.exclude": {
+  //       "src/js/**/*.d.ts": true,
+  //       "src/jsx/**/*.d.ts": true,
+  //       "src/jsx/**/tsconfig.json": true,
+  //       "src/jsx/lib": true,
+  //       "src/shared": true,
+  //       "tsconfig-build.json": true,
+  //       LICENSE: true,
+  //     },
+  //   };
+  //   const vscode = path.join(dir.path, ".vscode");
+  //   fs.mkdirSync(vscode);
+  //   fs.writeFileSync(
+  //     path.join(vscode, "settings.json"),
+  //     JSON.stringify(exclude)
+  //   );
+  // }
 }
