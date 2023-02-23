@@ -15,19 +15,20 @@ export type Options = {
 export type Framework = typeof frameworks[number];
 export const frameworks = ["react", "vue", "svelte"] as const;
 export const frameworkOptions: OptionsArray<Framework> = [
+  { value: "svelte", label: "Svelte" },
   { value: "react", label: "React" },
   { value: "vue", label: "Vue" },
-  { value: "svelte", label: "Svelte" },
 ];
 
 export type App = typeof apps[number];
 export const apps = ["aeft", "anim", "ilst", "phxs", "ppro"] as const;
 export const appOptions: OptionsArray<App> = [
   { value: "aeft", label: "After Effects" },
-  { value: "anim", label: "Animate" },
-  { value: "ilst", label: "Illustrator" },
-  { value: "phxs", label: "Photoshop" },
   { value: "ppro", label: "Premiere Pro" },
+  { value: "phxs", label: "Photoshop" },
+  { value: "ilst", label: "Illustrator" },
+  { value: "anim", label: "Animate" },
+  // { value: "encd", label: "Media Encoder" }, ??
 ];
 
 export type Template = typeof templates[number];
