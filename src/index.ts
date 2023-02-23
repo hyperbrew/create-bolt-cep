@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
 import * as color from "picocolors";
-import { prompts } from "./lib/prompts";
+import { boltIntro, prompts } from "./lib/prompts";
 import { installBolt } from "./lib/bolt";
-import { frameworkOptions } from "./lib/options";
+import { appOptions, frameworkOptions, templateOptions } from "./lib/options";
 import { parseArgs, throwError } from "./lib/parse-args";
 import { installDeps, initGit } from "./lib/utils";
+import { note, outro, spinner } from "@clack/prompts";
 
 main();
 
 async function main() {
   let options = await parseArgs();
+  let pretty;
+
+  boltIntro();
 
   if (typeof options === "string") {
     try {
@@ -22,32 +26,57 @@ async function main() {
     if (options.dir.exists && !options.dir.isEmpty)
       throwError("<appname>", `path is not empty.`, options.dir.path);
 
-    installBolt(options);
+    // prettier-ignore
+    pretty = { // @ts-ignore
+      framework: frameworkOptions.find((a) => a.value === options.framework)?.label, // @ts-ignore
+      template: templateOptions.find((a) => a.value === options.template)?.label,
+      apps: options.apps.map((x) => appOptions.find((a) => a.value === x)?.label).join(", ")
+    }
+
+    note(
+      [
+        `panel      ${options.dir.name} (${options.displayName})`,
+        `id         ${options.id}`,
+        `framework  ${pretty.framework}`,
+        `template   ${pretty.template}`,
+        `apps       ${pretty.apps}`,
+      ].join("\n"),
+      "Inputs"
+    );
+
+    const s = spinner();
+    s.start("Installing bolt-cep");
+    await installBolt(options);
+    s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
 
     if (options.installDeps) {
-      console.log("Installing dependencies via yarn...");
+      s.start("Installing dependencies via yarn");
       await installDeps(options);
-      console.log("Installed dependencies via yarn.");
+      s.stop("Installed dependencies via yarn.");
     }
 
-    if (options.git) {
-      console.log("Initializing git repo...");
-      await initGit(options);
-      console.log("Initialized git repo.");
-    }
+    // if (options.git) {
+    //   s.start("Initializing git repo");
+    //   await initGit(options);
+    //   s.stop("Initialized git repo.");
+    // }
   }
 
   // just for type checking, we should never return here, given that the return of prompts() sets options to an Options object
   if (typeof options === "string") return;
 
-  const { framework } = options;
-  const { label } = frameworkOptions.find((x) => x.value === framework)!;
+  note(
+    [
+      `New ${pretty?.framework} ${pretty?.template} Bolt CEP generated` +
+        `: ${color.green(color.bold(options.dir.name))}`,
+      options.dir.path,
+    ].join("\n"),
+    "Summary"
+  );
 
-  const yay = color.cyan(`New Bolt CEP generated with ${label}`);
-  const name = color.green(color.bold(options.dir.name));
-
-  console.log(yay, name);
-  console.log();
-  console.log(color.cyan(`Path :: ${options.dir.path}`));
-  console.log();
+  outro(
+    `Problems? ${color.cyan(
+      color.underline(`https://github.com/hyperbrew/bolt-cep`)
+    )}`
+  );
 }

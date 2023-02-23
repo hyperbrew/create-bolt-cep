@@ -2,7 +2,10 @@ import * as execa from "execa";
 import { Options } from "./options";
 
 export async function installDeps({ dir }: Options) {
-  await runCommandInDirectory(dir.path, [{ command: "yarn" }]);
+  await runCommandInDirectory(dir.path, [
+    { command: "yarn" },
+    // { command: "yarn build" }, TODO: ensure skeletons don't have missing references
+  ]);
 }
 
 export async function initGit({ dir }: Options) {

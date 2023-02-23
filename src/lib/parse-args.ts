@@ -1,5 +1,5 @@
+import { formatTitle } from "./format-title";
 import * as color from "picocolors";
-import { titleCase } from "title-case";
 import * as yargs from "yargs";
 import {
   App,
@@ -19,7 +19,7 @@ export async function parseArgs(): Promise<string | Options> {
   const argv = await yargs
     .usage("Usage: $0 <appname> [options]")
     .positional("appname", {
-      describe: "Name of the new bolt-cep application",
+      describe: "Name of the new Bolt CEP application",
       type: "string",
     })
     .option("framework", {
@@ -39,8 +39,8 @@ export async function parseArgs(): Promise<string | Options> {
       //   Array.isArray(arg) ? arg : arg ? [arg] : [],
       type: "array",
     })
-    .option("id", {
-      alias: "id",
+    .option("panel-id", {
+      alias: "p",
       describe: "Panel's id (com.bolt.cep)",
       type: "string",
     })
@@ -54,11 +54,11 @@ export async function parseArgs(): Promise<string | Options> {
       describe: "Install dependencies",
       type: "boolean",
     })
-    .option("initialize-git", {
-      alias: "g",
-      describe: "Initialize a new git repository",
-      type: "boolean",
-    })
+    // .option("initialize-git", {
+    //   alias: "g",
+    //   describe: "Initialize a new git repository",
+    //   type: "boolean",
+    // })
     .check(({ framework, template, apps: _apps }) => {
       if (framework && !frameworks.includes(framework as Framework)) {
         throwError(
@@ -86,11 +86,15 @@ export async function parseArgs(): Promise<string | Options> {
 
       return true;
     })
+    .example([
+      ["$0 <appname> -t skeleton -a aeft ilst -i", ""],
+      ["$0 <appname> -f svelte", ""],
+    ])
     .help().argv;
 
   // if we only got an app name, return the name (prompts() will take over from there!)
   // otherwise, use the args passed to construct an Options object, falling back on defaults where necessary
-  const appName = argv.appname ? String(argv.appname) : "";
+  const appName = argv["_"][0] ? String(argv["_"][0]) : "";
   const appDir = parsePath(appName);
   if (
     !argv.framework &&
@@ -110,10 +114,11 @@ export async function parseArgs(): Promise<string | Options> {
       apps: isAppStringArray(argv.apps)
         ? argv.apps
         : ["aeft", "anim", "ilst", "phxs", "ppro"],
-      git: argv.initializeGit ?? false,
+      // git: argv.initializeGit ?? false,
+      git: false, // TODO: initGit() isn't working
       installDeps: argv.installDependencies ?? false,
-      displayName: argv.displayName ?? titleCase(appDir.name),
-      id: argv.id ?? `com.${appDir.name}.cep`,
+      displayName: argv.displayName ?? formatTitle(appDir.name),
+      id: argv.panelId ?? `com.${appDir.name}.cep`,
     };
   }
 }

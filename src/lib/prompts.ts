@@ -3,14 +3,13 @@ import {
   text,
   select,
   multiselect,
-  outro,
   spinner,
   isCancel,
   cancel,
   confirm,
 } from "@clack/prompts";
+import { formatTitle } from "./format-title";
 import * as color from "picocolors";
-import { titleCase } from "title-case";
 import { installBolt } from "./bolt";
 import {
   appOptions,
@@ -31,11 +30,6 @@ export async function prompts({
 }: {
   destination: string;
 }): Promise<Options> {
-  const cbc = color.bgGreen(` create-bolt-cep `);
-  const bar = color.gray("│   ");
-  const bru = bar + color.cyan(`by Hyper Brew | https://hyperbrew.co`);
-  intro(`${cbc}\n${bru}`);
-
   // dir
   const placeholder = destination ? destination : "./";
   let dir: symbol | string | ReturnType<typeof parsePath> = await text({
@@ -85,12 +79,12 @@ export async function prompts({
     });
 
     handleCancel(apps);
-
+    const placeholder = formatTitle(dir.name);
     displayName = await text({
       message: "What do you want to use as your panel's display name?",
-      placeholder: titleCase(dir.name),
-      initialValue: titleCase(dir.name),
-      defaultValue: titleCase(dir.name),
+      placeholder: placeholder,
+      initialValue: placeholder,
+      defaultValue: placeholder,
     });
 
     handleCancel(displayName);
@@ -151,9 +145,19 @@ export async function prompts({
   //   s.stop("Initialized git repo.");
   // }
 
-  outro(`You're all set!`);
+  // outro(`You're all set!`);
 
   return options;
+}
+
+export function boltIntro() {
+  console.log();
+  const cbc = color.bgGreen(` create-bolt-cep `);
+  const bar = color.gray("│   ");
+  const bru =
+    bar +
+    color.cyan(`by Hyper Brew | ${color.underline("https://hyperbrew.co")}`);
+  intro(`${cbc}\n${bru}`);
 }
 
 function handleCancel(value: unknown) {
