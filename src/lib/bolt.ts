@@ -3,7 +3,7 @@ import * as path from "path";
 import * as os from "os";
 import { replaceInFile } from "./replace";
 import { updateObjectProperty, updateSwitchStatement } from "./ts-morph";
-import { Options, frameworkOptions, appOptions } from "./options";
+import { Options, frameworkOptions, appOptions, getFramework } from "./options";
 
 export async function installBolt({
   dir,
@@ -166,7 +166,7 @@ export async function installBolt({
 
   // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep"
   if (template === "skeleton") {
-    const label = frameworkOptions.find((x) => x.value === framework)?.label!;
+    const label = getFramework(framework)?.label!;
     const index = path.join(jsFolder, "main", "index.html");
     replaceInFile(index, [[`Bolt CEP ${label}`, displayName]]);
     replaceInFile(cepConfig, [

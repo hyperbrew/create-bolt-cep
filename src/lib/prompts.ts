@@ -1,19 +1,16 @@
 import {
-  intro,
   text,
   select,
   multiselect,
-  spinner,
   isCancel,
   cancel,
   confirm,
 } from "@clack/prompts";
-import { formatTitle } from "./format-title";
-import * as color from "picocolors";
-import { installBolt } from "./bolt";
 import {
   appOptions,
+  Framework,
   frameworkOptions,
+  getFramework,
   isAppStringArray,
   isBoolean,
   isFrameworkString,
@@ -22,16 +19,13 @@ import {
   Options,
   templateOptions,
 } from "./options";
+import * as color from "picocolors";
+import { formatTitle } from "./format-title";
 import { parsePath } from "./parse-path";
-import { installDeps as _installDeps, initGit, buildBolt } from "./utils";
 
-export async function prompts({
-  destination,
-}: {
-  destination: string;
-}): Promise<Options> {
+export async function prompts(options: { dir: string }): Promise<Options> {
   // dir
-  const placeholder = destination ? destination : "./";
+  const placeholder = options.dir ? options.dir : "./";
   let dir: symbol | string | ReturnType<typeof parsePath> = await text({
     message: "Where do you want to create your project?",
     placeholder: placeholder,
@@ -52,15 +46,15 @@ export async function prompts({
   const framework = await select({
     message: "Which UI framework would you like to use?",
     options: frameworkOptions,
-    initialValue: "react",
+    initialValue: "svelte",
   });
 
   handleCancel(framework);
-  const frameworkObject = frameworkOptions.find((x) => x.value === framework);
+  const frameworkLabel = getFramework(framework as Framework)?.label;
 
   // template
   const template = await select({
-    message: `Which ${frameworkObject?.label} template would you like to start with?`,
+    message: `Which ${frameworkLabel} template would you like to start with?`,
     options: templateOptions,
     initialValue: "demo",
   });
@@ -116,10 +110,6 @@ export async function prompts({
 
   // handleCancel(git);
 
-  // install bolt-cep
-  const s = spinner();
-  s.start("Installing bolt-cep");
-
   if (!isFrameworkString(framework)) throw new Error("");
   if (!isTemplateString(template)) throw new Error("");
   if (!isAppStringArray(apps)) throw new Error("");
@@ -128,40 +118,7 @@ export async function prompts({
   if (!isBoolean(installDeps)) throw new Error("");
   // if (!isBoolean(git)) return;
 
-  const options = { dir, framework, template, apps, displayName, id, installDeps, git: false }; // prettier-ignore
-  await installBolt(options);
-
-  s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
-
-  if (installDeps) {
-    s.start("Installing dependencies via yarn");
-    await _installDeps(options);
-    s.stop("Installed dependencies via yarn.");
-
-    s.start("Running initial build");
-    await buildBolt(options);
-    s.stop("Built!");
-  }
-
-  // if (git) {
-  //   s.start("Initializing git repo");
-  //   await initGit(options);
-  //   s.stop("Initialized git repo.");
-  // }
-
-  // outro(`You're all set!`);
-
-  return options;
-}
-
-export function boltIntro() {
-  console.log();
-  const cbc = color.bgGreen(` create-bolt-cep `);
-  const bar = color.gray("│   ");
-  const bru =
-    bar +
-    color.cyan(`by Hyper Brew | ${color.underline("https://hyperbrew.co")}`);
-  intro(`${cbc}\n${bru}`);
+  return { dir, framework, template, apps, displayName, id, installDeps, git: false }; // prettier-ignore
 }
 
 function handleCancel(value: unknown) {

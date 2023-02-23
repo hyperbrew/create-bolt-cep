@@ -1,43 +1,35 @@
 #!/usr/bin/env node
 
 import * as color from "picocolors";
-import { boltIntro, prompts } from "./lib/prompts";
+import { intro, note, outro, spinner } from "@clack/prompts";
+import { prompts } from "./lib/prompts";
 import { installBolt } from "./lib/bolt";
-import { appOptions, frameworkOptions, templateOptions } from "./lib/options";
+import { getApp, getFramework, getTemplate, isString } from "./lib/options";
 import { parseArgs, throwError } from "./lib/parse-args";
 import { installDeps, initGit, buildBolt } from "./lib/utils";
-import { note, outro, spinner } from "@clack/prompts";
 
 main();
 
 async function main() {
-  let options = await parseArgs();
-  let pretty;
-
   boltIntro();
 
-  if (typeof options === "string") {
-    try {
-      options = await prompts({ destination: options });
-      // prettier-ignore
-      pretty = { // @ts-ignore
-        framework: frameworkOptions.find((a) => a.value === options.framework)?.label, // @ts-ignore
-        template: templateOptions.find((a) => a.value === options.template)?.label,
-        apps: options.apps.map((x) => appOptions.find((a) => a.value === x)?.label).join(", ")
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
+  let options = await parseArgs();
+  let source: "cli" | "prompts" = "cli";
+  if (isString(options)) {
+    options = await prompts({ dir: options });
+    source = "prompts";
+  }
+
+  // prettier-ignore
+  const pretty = {
+    framework: getFramework(options.framework)?.label,
+    template: getTemplate(options.template)?.label,
+    apps: options.apps.map((x) => getApp(x)?.label).join(", ")
+  }
+
+  if (source === "cli") {
     if (options.dir.exists && !options.dir.isEmpty)
       throwError("<appname>", `path is not empty.`, options.dir.path);
-
-    // prettier-ignore
-    pretty = { // @ts-ignore
-      framework: frameworkOptions.find((a) => a.value === options.framework)?.label, // @ts-ignore
-      template: templateOptions.find((a) => a.value === options.template)?.label,
-      apps: options.apps.map((x) => appOptions.find((a) => a.value === x)?.label).join(", ")
-    }
 
     note(
       [
@@ -49,31 +41,28 @@ async function main() {
       ].join("\n"),
       "Inputs"
     );
-
-    const s = spinner();
-    s.start("Installing bolt-cep");
-    await installBolt(options);
-    s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
-
-    if (options.installDeps) {
-      s.start("Installing dependencies via yarn");
-      await installDeps(options);
-      s.stop("Installed dependencies via yarn.");
-
-      s.start("Running initial build");
-      await buildBolt(options);
-      s.stop("Built!");
-    }
-
-    // if (options.git) {
-    //   s.start("Initializing git repo");
-    //   await initGit(options);
-    //   s.stop("Initialized git repo.");
-    // }
   }
 
-  // just for type checking, we should never return here, given that the return of prompts() sets options to an Options object
-  if (typeof options === "string") return;
+  const s = spinner();
+  s.start("Installing bolt-cep");
+  await installBolt(options);
+  s.stop(`Installed ${color.bgGreen(` bolt-cep `)}.`);
+
+  if (options.installDeps) {
+    s.start("Installing dependencies via yarn");
+    await installDeps(options);
+    s.stop("Installed dependencies via yarn.");
+
+    s.start("Running initial build");
+    await buildBolt(options);
+    s.stop("Built!");
+  }
+
+  // if (options.git) {
+  //   s.start("Initializing git repo");
+  //   await initGit(options);
+  //   s.stop("Initialized git repo.");
+  // }
 
   note(
     [
@@ -89,4 +78,12 @@ async function main() {
       color.underline(`https://github.com/hyperbrew/bolt-cep`)
     )}`
   );
+}
+
+function boltIntro() {
+  console.log();
+  const cbc = color.bgGreen(` create-bolt-cep `);
+  const url = color.underline("https://hyperbrew.co");
+  const bru = color.gray("│   ") + color.cyan(`by Hyper Brew | ${url}`);
+  intro(`${cbc}\n${bru}`);
 }

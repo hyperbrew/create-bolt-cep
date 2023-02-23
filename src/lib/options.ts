@@ -13,7 +13,7 @@ export type Options = {
 };
 
 export type Framework = typeof frameworks[number];
-export const frameworks = ["react", "vue", "svelte"] as const;
+export const frameworks = ["svelte", "react", "vue"] as const;
 export const frameworkOptions: OptionsArray<Framework> = [
   { value: "svelte", label: "Svelte" },
   { value: "react", label: "React" },
@@ -21,7 +21,7 @@ export const frameworkOptions: OptionsArray<Framework> = [
 ];
 
 export type App = typeof apps[number];
-export const apps = ["aeft", "anim", "ilst", "phxs", "ppro"] as const;
+export const apps = ["aeft", "ppro", "phxs", "ilst", "anim"] as const;
 export const appOptions: OptionsArray<App> = [
   { value: "aeft", label: "After Effects" },
   { value: "ppro", label: "Premiere Pro" },
@@ -37,6 +37,19 @@ export const templateOptions: OptionsArray<Template> = [
   { value: "demo", label: "Demo" },
   { value: "skeleton", label: "Skeleton" },
 ];
+
+// getters
+export function getFramework(value: string) {
+  return frameworkOptions.find((t) => t.value === value);
+}
+
+export function getApp(value: string) {
+  return appOptions.find((t) => t.value === value);
+}
+
+export function getTemplate(value: string) {
+  return templateOptions.find((t) => t.value === value);
+}
 
 // annoying types to satisfy @clack/prompts and to be explicit in the above Options type
 type Option<T extends string> = { value: T; label: string };
