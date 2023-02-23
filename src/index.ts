@@ -5,7 +5,7 @@ import { boltIntro, prompts } from "./lib/prompts";
 import { installBolt } from "./lib/bolt";
 import { appOptions, frameworkOptions, templateOptions } from "./lib/options";
 import { parseArgs, throwError } from "./lib/parse-args";
-import { installDeps, initGit } from "./lib/utils";
+import { installDeps, initGit, buildBolt } from "./lib/utils";
 import { note, outro, spinner } from "@clack/prompts";
 
 main();
@@ -19,6 +19,12 @@ async function main() {
   if (typeof options === "string") {
     try {
       options = await prompts({ destination: options });
+      // prettier-ignore
+      pretty = { // @ts-ignore
+        framework: frameworkOptions.find((a) => a.value === options.framework)?.label, // @ts-ignore
+        template: templateOptions.find((a) => a.value === options.template)?.label,
+        apps: options.apps.map((x) => appOptions.find((a) => a.value === x)?.label).join(", ")
+      }
     } catch (error) {
       console.error(error);
     }
@@ -53,6 +59,10 @@ async function main() {
       s.start("Installing dependencies via yarn");
       await installDeps(options);
       s.stop("Installed dependencies via yarn.");
+
+      s.start("Running initial build");
+      await buildBolt(options);
+      s.stop("Built!");
     }
 
     // if (options.git) {
@@ -67,7 +77,7 @@ async function main() {
 
   note(
     [
-      `New ${pretty?.framework} ${pretty?.template} Bolt CEP generated` +
+      `${pretty?.template} Bolt CEP generated with ${pretty?.framework}` +
         `: ${color.green(color.bold(options.dir.name))}`,
       options.dir.path,
     ].join("\n"),

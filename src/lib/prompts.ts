@@ -23,7 +23,7 @@ import {
   templateOptions,
 } from "./options";
 import { parsePath } from "./parse-path";
-import { installDeps as _installDeps, initGit } from "./utils";
+import { installDeps as _installDeps, initGit, buildBolt } from "./utils";
 
 export async function prompts({
   destination,
@@ -137,6 +137,10 @@ export async function prompts({
     s.start("Installing dependencies via yarn");
     await _installDeps(options);
     s.stop("Installed dependencies via yarn.");
+
+    s.start("Running initial build");
+    await buildBolt(options);
+    s.stop("Built!");
   }
 
   // if (git) {

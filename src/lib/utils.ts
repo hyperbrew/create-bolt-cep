@@ -2,10 +2,12 @@ import * as execa from "execa";
 import { Options } from "./options";
 
 export async function installDeps({ dir }: Options) {
-  await runCommandInDirectory(dir.path, [
-    { command: "yarn" },
-    // { command: "yarn build" }, TODO: ensure skeletons don't have missing references
-  ]);
+  await runCommandInDirectory(dir.path, [{ command: "yarn" }]);
+}
+
+export async function buildBolt({ dir, template }: Options) {
+  if (template === "skeleton") return; // TODO: just for now! need to make sure skeleton's are not missing any references after removing files etc
+  await runCommandInDirectory(dir.path, [{ command: "yarn", args: ["build"] }]);
 }
 
 export async function initGit({ dir }: Options) {
