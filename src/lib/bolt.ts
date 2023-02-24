@@ -148,6 +148,13 @@ export async function installBolt({
     const selectedApps = appOptions.filter((x) => apps.includes(x.value));
     updateSwitchStatement(index, selectedApps);
 
+    selectedApps.forEach(({ value }) => {
+      const filePath = path.join(jsxFolder, value, `${value}.ts`);
+      if (fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, "");
+      }
+    });
+
     const hostAppStrings = apps.map((x) => {
       const name = x === "anim" ? "FLPR" : x.toUpperCase();
       return `{ name: "${name}", version: "[0.0,99.9]" }`;
