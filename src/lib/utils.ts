@@ -5,8 +5,7 @@ export async function installDeps({ dir }: Options) {
   await runCommandInDirectory(dir.path, [{ command: "yarn" }]);
 }
 
-export async function buildBolt({ dir, template }: Options) {
-  if (template === "skeleton") return; // TODO: just for now! need to make sure skeleton's are not missing any references after removing files etc
+export async function buildBolt({ dir }: Options) {
   await runCommandInDirectory(dir.path, [{ command: "yarn", args: ["build"] }]);
 }
 
