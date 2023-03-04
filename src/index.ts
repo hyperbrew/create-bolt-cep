@@ -85,5 +85,5 @@ function boltIntro() {
   const cbc = color.bgGreen(` create-bolt-cep `);
   const url = color.underline("https://hyperbrew.co");
   const bru = color.gray("│   ") + color.cyan(`by Hyper Brew | ${url}`);
-  intro(`${cbc}\n${bru}`);
+  intro(`${cbc} \n${bru}`);
 }

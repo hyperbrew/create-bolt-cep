@@ -117,12 +117,14 @@ export async function installBolt({
       (file) => {
         const filePath = path.join(jsFolder, file);
         if (fs.existsSync(filePath)) {
-          replaceInFile(filePath, [[`import "../index.scss";\n`, ""]]);
+          replaceInFile(filePath, [[`import "../index.scss";`, "\n"]]);
         }
       }
     );
 
-    const h1 = `<h1>Welcome to Bolt CEP!</h1>`;
+    const inlineStyle =
+      framework === "react" ? `{{ color: "#ff5b3b" }}` : `"color: #ff5b3b;"`;
+    const h1 = `<h1 style=${inlineStyle}>Welcome to Bolt CEP!</h1>`;
     const strings = {
       react: `const Main = () => {\n  return (\n    <div>\n      ${h1}\n    </div>\n  );\n};\nexport default Main;`,
       svelte: h1,
