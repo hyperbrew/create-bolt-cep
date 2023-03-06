@@ -14,6 +14,17 @@ const frameworks = [
   { name: "svelte", pretty: "Svelte" },
 ];
 
+const slugify = (...args: string[]): string => {
+  const value = args.join(" ");
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9 ]/g, "")
+    .replace(/\s+/g, "-");
+};
+
 const div = () =>
   console.info(c.grey("--------------------------------------------------"));
 const space = () => console.info("");
@@ -117,6 +128,10 @@ const init = async () => {
     // Remove Debug Lines from config
     replaceInFile(path.join(dest, "cep.config.ts"), [
       [/.*(\/\/ BOLT-CEP-DEBUG-ONLY).*/g, ""],
+      // Replace default "Bolt CEP" entries with user-provided extension name
+      [/(?<=displayName:\s\")[^\"]*(?=\")/gim, name],
+      [/(?<=panelDisplayName:\s\")[^\"]*(?=\")/gim, name],
+      [/(?<=id:\s\"com\.)[^\"]*(?=\.cep\")/gim, slugify(name)],
     ]);
 
     // Add .gitignore
