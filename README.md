@@ -10,6 +10,4 @@ https://github.com/hyperbrew/bolt-cep
 
 Usage Examples:
 
-`yarn create bolt-cep myApp --template svelte`
-`yarn create bolt-cep myApp --template react`
-`yarn create bolt-cep myApp --template vue`
+`yarn create bolt-cep`
