@@ -34,8 +34,15 @@ export const appOptions: OptionsArray<App> = [
 export type Template = typeof templates[number];
 export const templates = ["demo", "skeleton"] as const;
 export const templateOptions: OptionsArray<Template> = [
-  { value: "demo", label: "Demo" },
-  { value: "skeleton", label: "Skeleton" },
+  {
+    value: "demo",
+    label:
+      "Demo (setup for all apps (After Effects, Premiere, Photoshop, etc) with sample functions and buttons)",
+  },
+  {
+    value: "skeleton",
+    label: "Skeleton (only selected apps and no sample UI or functions)",
+  },
 ];
 
 // getters

@@ -174,14 +174,14 @@ export async function installBolt({
   }
 
   // Replace "Bolt-CEP", "bolt-cep", "com.bolt.cep"
-  if (template === "skeleton") {
-    const label = getFramework(framework)?.label!;
-    const index = path.join(jsFolder, "main", "index.html");
+  const label = getFramework(framework)?.label!;
+  const index = path.join(jsFolder, "main", "index.html");
+  if (displayName) {
     replaceInFile(index, [[`Bolt CEP ${label}`, displayName]]);
-    replaceInFile(cepConfig, [
-      ["Bolt CEP", displayName],
-      ["com.bolt.cep", id],
-    ]);
+    replaceInFile(cepConfig, [["Bolt CEP", displayName]]);
+  }
+  if (id) {
+    replaceInFile(cepConfig, [["com.bolt.cep", id]]);
   }
 
   // set jsxbin to "off" for Apple Silicon

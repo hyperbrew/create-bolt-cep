@@ -73,25 +73,25 @@ export async function prompts(options: { dir: string }): Promise<Options> {
     });
 
     handleCancel(apps);
-    const placeholder = formatTitle(dir.name);
-    displayName = await text({
-      message: "What do you want to use as your panel's display name?",
-      placeholder: placeholder,
-      initialValue: placeholder,
-      defaultValue: placeholder,
-    });
-
-    handleCancel(displayName);
-
-    id = await text({
-      message: "What do you want to use as your panel's id?",
-      placeholder: `com.${dir.name}.cep`,
-      initialValue: `com.${dir.name}.cep`,
-      defaultValue: `com.${dir.name}.cep`,
-    });
-
-    handleCancel(id);
   }
+  const titlePlaceholder = formatTitle(dir.name);
+  displayName = await text({
+    message: "What do you want to use as your panel's display name?",
+    placeholder: titlePlaceholder,
+    initialValue: titlePlaceholder,
+    defaultValue: titlePlaceholder,
+  });
+
+  handleCancel(displayName);
+
+  id = await text({
+    message: "What do you want to use as your panel's id?",
+    placeholder: `com.${dir.name}.cep`,
+    initialValue: `com.${dir.name}.cep`,
+    defaultValue: `com.${dir.name}.cep`,
+  });
+
+  handleCancel(id);
 
   // install dependencies
   const recommended = color.gray("(recommended)");
