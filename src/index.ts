@@ -11,6 +11,7 @@ import { installDeps, initGit, buildBolt } from "./lib/utils";
 main();
 
 async function main() {
+  console.clear();
   boltIntro();
 
   let options = await parseArgs();
