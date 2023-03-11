@@ -153,7 +153,7 @@ export async function installBolt({
     selectedApps.forEach(({ value }) => {
       const filePath = path.join(jsxFolder, value, `${value}.ts`);
       if (fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, "");
+        fs.writeFileSync(filePath, "export const example = () => {};");
       }
     });
 
