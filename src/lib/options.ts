@@ -12,7 +12,7 @@ export type Options = {
   git: boolean;
 };
 
-export type Framework = typeof frameworks[number];
+export type Framework = (typeof frameworks)[number];
 export const frameworks = ["svelte", "react", "vue"] as const;
 export const frameworkOptions: OptionsArray<Framework> = [
   { value: "svelte", label: "Svelte" },
@@ -20,18 +20,31 @@ export const frameworkOptions: OptionsArray<Framework> = [
   { value: "vue", label: "Vue" },
 ];
 
-export type App = typeof apps[number];
-export const apps = ["aeft", "ppro", "phxs", "ilst", "anim"] as const;
+export type App = (typeof apps)[number];
+export const apps = [
+  "aeft",
+  "ame",
+  "audt",
+  "anim",
+  "idsn",
+  "ilst",
+  "kbrg",
+  "phxs",
+  "ppro",
+] as const;
 export const appOptions: OptionsArray<App> = [
   { value: "aeft", label: "After Effects" },
   { value: "ppro", label: "Premiere Pro" },
   { value: "phxs", label: "Photoshop" },
   { value: "ilst", label: "Illustrator" },
+  { value: "idsn", label: "InDesign" },
   { value: "anim", label: "Animate" },
-  // { value: "encd", label: "Media Encoder" }, ??
+  { value: "ame", label: "Media Encoder" },
+  { value: "kbrg", label: "Bridge" },
+  { value: "audt", label: "Audition" },
 ];
 
-export type Template = typeof templates[number];
+export type Template = (typeof templates)[number];
 export const templates = ["demo", "skeleton"] as const;
 export const templateOptions: OptionsArray<Template> = [
   {

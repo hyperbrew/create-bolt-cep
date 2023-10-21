@@ -7,20 +7,20 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.17.8.tgz#2817fb9d885dd8132ea0f8eb615a6388cca1c240"
   integrity sha512-BoHhDJrJXqcg+ZL16Xv39H9n+AqJ4pcDrQBGZN+wHxIysrLZ3/ECwCBUch/1zUNhnsXULcONU3Ei5Hmkfk6kiQ==
 
-"@clack/core@^0.1.6":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@clack/core/-/core-0.1.7.tgz#a51433d57be1e3534681ba7f7e14483804a2884b"
-  integrity sha512-hyrb8/QlcC2vJO5ZL19/Fl3YHwfPK2o2TuW1zczzFO7lBUQWePGHhJu2wc6AJOjtpbyppylCLWnFFY3sGfLJSg==
+"@clack/core@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@clack/core/-/core-0.3.3.tgz#233ccebf779aa5a66fc68ee48df5e58cd226fd94"
+  integrity sha512-5ZGyb75BUBjlll6eOa1m/IZBxwk91dooBWhPSL67sWcLS0zt9SnswRL0l26TVdBhb0wnWORRxUn//uH6n4z7+A==
   dependencies:
     picocolors "^1.0.0"
     sisteransi "^1.0.5"
 
-"@clack/prompts@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@clack/prompts/-/prompts-0.4.3.tgz#4f10d3cd478c5bbc9dec5b7fa3a24afb487731ba"
-  integrity sha512-R3Ws19DbdqKarkfbvqde0v9Cfi7o/mferY4CF4ca4VOrrUXUKP0NOofKEMDzuehEdlImiaC5qs9UKnfU3p2IxQ==
+"@clack/prompts@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@clack/prompts/-/prompts-0.7.0.tgz#6aaef48ea803d91cce12bc80811cfcb8de2e75ea"
+  integrity sha512-0MhX9/B4iL6Re04jPrttDm+BsP8y6mS7byuv0BvXgdXhbV5PdlsHt55dvNsuBCPZ7xq1oTAOOuotR9NFbQyMSA==
   dependencies:
-    "@clack/core" "^0.1.6"
+    "@clack/core" "^0.3.3"
     picocolors "^1.0.0"
     sisteransi "^1.0.5"
 
@@ -488,6 +488,11 @@ is-stream@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-2.0.1.tgz#fac1e3d53b97ad5a9d0ae9cef2389f5810a5c077"
   integrity sha512-hFoiJiTl63nn+kstHGBtewWSKnQLpyb155KHheA1l39uvtO9nWIop1p3udqPcUd/xbF1VLMO4n7OI6p7RbngDg==
+
+is-unicode-supported@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/is-unicode-supported/-/is-unicode-supported-1.3.0.tgz#d824984b616c292a2e198207d4a609983842f714"
+  integrity sha512-43r2mRvz+8JRIKnWJ+3j8JtjRKZ6GmjzfaE/qiBJnikNnYv/6bagRJ1kUhNk8R5EX/GkobD+r+sfxCPJsiKBLQ==
 
 is-windows@^1.0.1:
   version "1.0.2"

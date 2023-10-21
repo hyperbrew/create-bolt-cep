@@ -1,4 +1,4 @@
-import { ts, Project, WriterFunction } from "ts-morph";
+import { ts, Project, WriterFunction, DefaultClause } from "ts-morph";
 import { App, OptionsArray } from "./options";
 
 export function updateObjectProperty(
@@ -50,6 +50,13 @@ export function updateSwitchStatement(
       clause.remove();
     }
   });
+
+  const hasAnim = selectedApps.find((x) => x.value === "anim");
+  if (!hasAnim) {
+    const clauses = switchStatement.getClauses();
+    const defaultClause = clauses.find((x) => x instanceof DefaultClause);
+    defaultClause?.remove();
+  }
 
   const typeAlias = sourceFile.getTypeAliasOrThrow("Scripts");
   const values = selectedApps.map((x) => x.value);
