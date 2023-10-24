@@ -18,6 +18,7 @@ export async function installBolt({
   const globalBolt = path.join(root, "..", "bolt-cep");
 
   let bolt = fs.existsSync(localBolt) ? localBolt : globalBolt;
+  // bolt = globalBolt; // for use when testing against dev version of `bolt-cep`
   const isSymlink = fs.lstatSync(bolt).isSymbolicLink();
   bolt = isSymlink ? fs.realpathSync(bolt) : bolt;
 
@@ -106,12 +107,14 @@ export async function installBolt({
     ].forEach((file) => fs.removeSync(path.join(jsFolder, file)));
 
     // remove references
-    replaceInFile(cepConfig, [
-      [`iconDarkNormal: "./src/assets/light-icon.png",\n`, ""],
-      [`iconNormal: "./src/assets/dark-icon.png",\n`, ""],
-      [`iconDarkNormalRollOver: "./src/assets/light-icon.png",\n`, ""],
-      [`iconNormalRollOver: "./src/assets/dark-icon.png",\n`, ""],
-    ]);
+    // TODO: fix this.. as it currently breaks CEP panel.
+    // empty string becomes `undefined` in `manifest.xml` which prevents panel from appearing in Extensions menu of host apps
+    // replaceInFile(cepConfig, [
+    //   [`iconDarkNormal: "./src/assets/light-icon.png",\n`, ""],
+    //   [`iconNormal: "./src/assets/dark-icon.png",\n`, ""],
+    //   [`iconDarkNormalRollOver: "./src/assets/light-icon.png",\n`, ""],
+    //   [`iconNormalRollOver: "./src/assets/dark-icon.png",\n`, ""],
+    // ]);
 
     [path.join("main", "index.tsx"), path.join("main", "index.ts")].forEach(
       (file) => {

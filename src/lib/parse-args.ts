@@ -113,7 +113,7 @@ export async function parseArgs(): Promise<string | Options> {
       template: isTemplateString(argv.template) ? argv.template : "demo",
       apps: isAppStringArray(argv.apps)
         ? argv.apps
-        : ["aeft", "anim", "ilst", "phxs", "ppro"],
+        : (apps as unknown as App[]),
       // git: argv.initializeGit ?? false,
       git: false, // TODO: initGit() isn't working
       installDeps: argv.installDependencies ?? false,
