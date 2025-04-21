@@ -258,10 +258,10 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-bolt-cep@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/bolt-cep/-/bolt-cep-1.2.6.tgz#388f0c9c49cdc552368c7802207e9ea859fe4115"
-  integrity sha512-Qv3u4I6m2pQA+8q+4WlxiWhpGnw16waoy1n0UR0ob7QJLgkGjDe13zIr3otNrd/J7PF7OqRkvrB3SOXQsSht6w==
+bolt-cep@^1.2.7:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/bolt-cep/-/bolt-cep-1.2.7.tgz#67ec2e4fecfedd6ffb1cf09f768b79174a064c15"
+  integrity sha512-jjC7sAxkILvp+jBuY1QPd3GLDEXFZ5Uxe6W/PlKxjrOtAwkgu74/NegDz21xXrmEw1t3pmOWui56dbVbJlKfBg==
   dependencies:
     react "^18.2.0"
     react-dom "^18.2.0"
