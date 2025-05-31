@@ -1,5 +1,11 @@
 # Create Bolt CEP
 
+## ⚠️ This Repo is archived. The project has been consolidated to the monorepo for Bolt CEP:
+
+[Bolt CEP](https://github.com/hyperbrew/bolt-cep)
+
+---
+
 ![npm](https://img.shields.io/npm/v/create-bolt-cep)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/hyperbrew/create-bolt-cep/blob/master/LICENSE)
 [![Chat](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/PC3EvvuRbc)
